@@ -6,7 +6,7 @@ pendulum is accurate, and how that time is governed by the largest Lyapunov
 exponent.
 
 The work began as the Math 165 (Numerical Analysis) final project of Luke Wang
-and Arjun Pemmasani at Harvey Mudd College in fall 2025. This repository is the
+and I (Arjun Pemmasani) at Harvey Mudd College in fall 2025. This repository is the
 version rebuilt for publication.
 
 ## The two manuscripts
