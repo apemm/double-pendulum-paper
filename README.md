@@ -20,10 +20,29 @@ first declines.
 | Journal | *American Journal of Physics*, Computational Physics section | *European Journal of Physics*, Paper (Mechanics) |
 | Folder | `ajp/` | `ejp/` |
 | Framing | A computational exercise for instructors, with six suggested problems | A student computational project, with its educational use and level stated |
-| Format | REVTeX 4.2 preprint, 17 pages, about 5.7 journal pages against a limit of 6 | 12 pt article, about 3300 words against a limit of 4000 |
+| Format | REVTeX 4.2 preprint, 16 pages. See "Length" below | 12 pt article, about 2900 words of body text against a limit of 4000 |
 | Review | Anonymous: `manuscript.pdf` carries no names; `manuscript_named.pdf` does | Single-anonymous: names on the manuscript |
+| Supplement | `supplement_anonymous.zip`, built and scanned by `code/make_supplement.py`. Never this README, which names the authors | The repository contents |
 | Cover letter | `ajp/cover_letter.pdf` | `ejp/cover_letter.pdf`, which EJP requires, stating level and usefulness |
 | Also needed | Alt text for every figure: `ajp/alt_text.md` | |
+
+## Length of the AJP manuscript
+
+AJP asks that papers normally fit on 6 journal pages. Two estimates disagree, and
+the truth for AJP's own layout is probably between them.
+
+| Build | Preprint pages | AJP's rule of thumb (pages / 3) | Two-column REVTeX build |
+|---|---|---|---|
+| `manuscript.pdf`, the one to submit | 16 | 5.3 | about 6.2, the last 0.2 being references |
+| `manuscript_long.pdf` | 19 | 6.3 | about 7.0 |
+
+The submitted version leaves out the snapshot figure, the precision-sweep curves
+(their content is in the horizon figure and the second animation), the energy
+figure (its numbers stay in the text), suggested problems 4 and 5, and the
+general form of the stall rule, and runs the list of five lessons into a
+paragraph. All of it is in the source behind `\ifdefined\longversion`, so
+compiling `manuscript_long.tex` restores it if an editor allows the space.
+`manuscript_twocolumn.tex` exists only to measure length.
 
 ## What was found
 
@@ -44,12 +63,51 @@ one metre long.
   units (32 s for one-metre rods). The best step is 2^-11; going to 2^-17 costs 64
   times as much and gives 98. In single precision the best is 53, at 2^-7, and it
   falls to 30 by 2^-17.
-- With 11-bit arithmetic and h = 2^-12 the pendulum never moves: every increment
-  is below half a unit in the last place.
+- With 11-bit arithmetic and h = 2^-12 the pendulum never moves. The velocity falls
+  by exactly h per step for 2048 steps, reaches -1/2 at t = 1/2, where h is half a
+  unit in its last place, and round-to-even freezes it. The increment to the angle
+  is then 2^-13 for ever, a quarter of the 2^-11 needed to change the angle. With
+  h = 2^-8 the angle first moves at t = 0.129. On a grid of 24 cases every
+  h < 2^-p stalled and every h > 2^-p moved, and at h = 2^-p the increment is a tie
+  decided by the last bit of pi/2 (`code/lowprec_check.py`, `code/stall_grid.py`).
+- The cost of a longer horizon depends on which exponent is used. Doubling the
+  double-precision horizon multiplies the steps by about 2000 and needs about 50
+  more bits at the long-time 0.299, or 7000 and 59 at the finite-time 0.35.
 - Energy stays conserved to 4e-11 in a double-precision run whose trajectory is
   lost at t = 92.
 - The original observation, that a step ten times smaller bought only five to
   ten more seconds, is 4 ln10 / lambda = 10 s.
+
+## Prior work that had to be cited
+
+A literature search on 19 September 2026 (ten searches by different routes,
+every result checked against Crossref or arXiv) found that the main results exist
+in the research literature for other systems, and both manuscripts now say so.
+
+- Li, Zeng and Chou (2001): a given precision has a best step and a longest
+  reliable time.
+- Kehlet and Logg (2017): an error estimate of the form used here, with
+  accumulated roundoff proportional to h^-1/2. The fitted exponent here is 0.6.
+- Wang and Li (2014, arXiv): reliable time is linear in the number of digits with
+  slope ln B / lambda, which is the one-bit-buys-ln2/lambda law.
+- Mendes and Nepomuceno (2016): the Lyapunov exponent estimated from the
+  divergence of two computations that round differently.
+- Hayes (2004) and Faux and Godolphin (2021), both in AJP: shadowing, and
+  floating-point pitfalls for students.
+- Calvao and Penna (2015) in EJP and Rafat, Wheatland and Bedding (2009) in AJP:
+  numerical studies of the double pendulum.
+- Wild (2019): an undergraduate thesis at James Madison University that varies
+  the word size in double pendulum simulations.
+
+What remains ours is the classroom treatment: separating the two errors with the
+precision as a program parameter, measuring each, the collapse onto a perturbed
+trajectory, the stall, and doing all of it on the double pendulum.
+
+Two things to do before submitting. Read Calvao and Penna in full: one search
+reported that they judge integrators by energy error and notice a best step near
+1e-4, and if so that deserves a sentence of direct contrast, but only the
+abstract could be checked here. Read Wild's thesis, whose PDF could not be
+fetched, so that the sentence describing it is accurate.
 
 ## Changes from the original project, and why
 
@@ -76,9 +134,12 @@ python runs.py 20          # all simulations, about 35 minutes on 20 cores, 53 M
 python lyapunov.py         # two-trajectory exponent, about 10 minutes
 python orders.py 16        # Euler and midpoint check
 python shadow_check.py     # long-time averages in single and double precision
+python lowprec_check.py    # the 11-bit stall, step by step
+python stall_grid.py       # the stall rule on a grid of precisions and steps
 python analysis.py         # error curves, horizons, fits -> data/*.json, numbers.tex
 python figures.py          # figures/*.pdf and *.png
 python animate.py both     # animations/*.gif and *.mp4
+python make_supplement.py  # anonymous bundle for AJP review, scanned for names
 ```
 
 `data/raw/` is not committed; it is regenerated by `runs.py`. Everything
@@ -92,7 +153,7 @@ hand, other than the two long-time averages in the shadowing check.
 ## Layout
 
 ```
-ajp/                 manuscript (anonymous and named), cover letter, alt text
+ajp/                 manuscript.tex (one source); _named, _long and _twocolumn wrappers; cover letter; alt text
 ejp/                 manuscript, cover letter
 figures/             fig1 to fig7, PDF and 600 dpi PNG
 animations/          step_size and precision, GIF and MP4 (supplementary material)
@@ -104,10 +165,12 @@ numbers.tex          generated; every quoted number
 
 ## Before submitting
 
-- Confirm Luke Wang's affiliation line and which author is corresponding, and
-  replace the contact address with an institutional one if preferred.
-- AJP: upload `ajp/manuscript.pdf` (anonymous), the figures, `alt_text.md`, and
-  the supplementary material (`code/`, `data/` without `raw/`, `animations/`).
+- Confirm Luke Wang's affiliation line and which author is corresponding.
+- AJP: upload `ajp/manuscript.pdf` (anonymous), the three figures it uses
+  (`fig2_step_sweep`, `fig4_horizons`, `fig5_turnover`), `ajp/alt_text.md`, and
+  `supplement_anonymous.zip`. Do not upload this README or link this repository,
+  since both name the authors.
 - EJP: upload `ejp/manuscript.pdf` and the cover letter.
 - Run a fresh literature search on the day. AJP rejects without review for
-  missing closely related work, and the search here is current to September 2026.
+  missing closely related work, and the search here is current to 19 September
+  2026.
