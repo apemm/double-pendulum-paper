@@ -1,0 +1,146 @@
+[
+ {
+  "p": 10,
+  "k": 8,
+  "theta_first_moves_t": 0.25390625,
+  "omega1_final": -0.6376953125
+ },
+ {
+  "p": 10,
+  "k": 9,
+  "theta_first_moves_t": 0.501953125,
+  "omega1_final": -0.775390625
+ },
+ {
+  "p": 10,
+  "k": 10,
+  "theta_first_moves_t": null,
+  "omega1_final": -1.0
+ },
+ {
+  "p": 10,
+  "k": 11,
+  "theta_first_moves_t": null,
+  "omega1_final": -0.5
+ },
+ {
+  "p": 11,
+  "k": 9,
+  "theta_first_moves_t": 0.251953125,
+  "omega1_final": -0.640625
+ },
+ {
+  "p": 11,
+  "k": 10,
+  "theta_first_moves_t": 0.5009765625,
+  "omega1_final": -0.7763671875
+ },
+ {
+  "p": 11,
+  "k": 11,
+  "theta_first_moves_t": null,
+  "omega1_final": -1.0
+ },
+ {
+  "p": 11,
+  "k": 12,
+  "theta_first_moves_t": null,
+  "omega1_final": -0.5
+ },
+ {
+  "p": 12,
+  "k": 10,
+  "theta_first_moves_t": 0.2509765625,
+  "omega1_final": -0.64208984375
+ },
+ {
+  "p": 12,
+  "k": 11,
+  "theta_first_moves_t": 0.50048828125,
+  "omega1_final": -0.77587890625
+ },
+ {
+  "p": 12,
+  "k": 12,
+  "theta_first_moves_t": 1.0,
+  "omega1_final": -1.0
+ },
+ {
+  "p": 12,
+  "k": 13,
+  "theta_first_moves_t": null,
+  "omega1_final": -0.5
+ },
+ {
+  "p": 13,
+  "k": 11,
+  "theta_first_moves_t": 0.25048828125,
+  "omega1_final": -0.642578125
+ },
+ {
+  "p": 13,
+  "k": 12,
+  "theta_first_moves_t": 0.500244140625,
+  "omega1_final": -0.7763671875
+ },
+ {
+  "p": 13,
+  "k": 13,
+  "theta_first_moves_t": null,
+  "omega1_final": -1.0
+ },
+ {
+  "p": 13,
+  "k": 14,
+  "theta_first_moves_t": null,
+  "omega1_final": -0.5
+ },
+ {
+  "p": 14,
+  "k": 12,
+  "theta_first_moves_t": 0.250244140625,
+  "omega1_final": -0.64215087890625
+ },
+ {
+  "p": 14,
+  "k": 13,
+  "theta_first_moves_t": 0.5001220703125,
+  "omega1_final": -0.7760009765625
+ },
+ {
+  "p": 14,
+  "k": 14,
+  "theta_first_moves_t": null,
+  "omega1_final": -1.0
+ },
+ {
+  "p": 14,
+  "k": 15,
+  "theta_first_moves_t": null,
+  "omega1_final": -0.5
+ },
+ {
+  "p": 16,
+  "k": 14,
+  "theta_first_moves_t": 0.25006103515625,
+  "omega1_final": -0.6418304443359375
+ },
+ {
+  "p": 16,
+  "k": 15,
+  "theta_first_moves_t": 0.500030517578125,
+  "omega1_final": -0.776397705078125
+ },
+ {
+  "p": 16,
+  "k": 16,
+  "theta_first_moves_t": null,
+  "omega1_final": -1.0
+ },
+ {
+  "p": 16,
+  "k": 17,
+  "theta_first_moves_t": null,
+  "omega1_final": -0.5
+ }
+]

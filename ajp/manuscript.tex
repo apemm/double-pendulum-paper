@@ -8,7 +8,11 @@
 \newif\ifanon
 \ifdefined\named\anonfalse\else\anontrue\fi
 
+\ifdefined\twocolumnversion
+\documentclass[prb,reprint,amsmath,amssymb]{revtex4-2}
+\else
 \documentclass[prb,preprint,amsmath,amssymb]{revtex4-2}
+\fi
 \usepackage{graphicx}
 \usepackage{bm}
 \usepackage[hidelinks]{hyperref}
@@ -24,7 +28,7 @@ Step size, floating-point precision, and the Lyapunov exponent}
 \else
 \author{Luke Wang}
 \author{Arjun Pemmasani}
-\email{arjun.pemmasani@gmail.com}
+\email{apemmasani@hmc.edu}
 \affiliation{Harvey Mudd College, Claremont, California 91711}
 \fi
 
@@ -92,7 +96,17 @@ been studied in the research literature on atmospheric models\cite{teixeira2007}
 and with multiple-precision arithmetic.\cite{liao2009} What we have not found is
 a treatment at the level of an undergraduate course in which the student
 separates the two sources of error, measures each, and connects both to the
-Lyapunov exponent. That is what is offered here. The exercise teaches five things:
+Lyapunov exponent. That is what is offered here.
+\ifdefined\shortversion
+The exercise teaches that the time for which a simulation of a chaotic system is
+accurate depends only logarithmically on the error committed per step; that
+truncation and roundoff can be isolated once the precision of the arithmetic is a
+parameter of the program; that numerical error, being a small perturbation,
+measures the Lyapunov exponent as well as a perturbed initial condition does;
+that each floating-point format has a best step and a longest accurate time; and
+that conservation of energy is not evidence that a chaotic trajectory is correct.
+\else
+The exercise teaches five things:
 \begin{enumerate}
 \item The time for which a simulation of a chaotic system is accurate depends
 only logarithmically on the error committed per step, so that large
@@ -107,6 +121,7 @@ accurate time that no step can improve upon.
 \item Conservation of energy is not evidence that a chaotic trajectory is
 correct.
 \end{enumerate}
+\fi
 
 \section{Model and numerical method}
 
@@ -250,6 +265,13 @@ measure $\lambda$.
 
 \subsection{Step size}
 
+\ifdefined\shortversion
+Pendulums that start from identical states and are integrated with identical
+237-bit arithmetic, differing only in $h$, coincide to within the width of a line
+for a long time and then depart one by one, largest step first. An animation in
+the supplementary material, in which the error curves are drawn alongside the
+pendulums as they evolve, makes the point to a class more quickly than any graph.
+\else
 Figure~\ref{fig:snap} shows what the experiment looks like. Three pendulums start
 from identical states and are integrated with identical 237-bit arithmetic.
 They differ only in $h$. For a long time they coincide to within the width of a
@@ -266,6 +288,7 @@ $h=2^{-8}$ leaves the others near $t=\TkEight$, and the run with $h=2^{-11}$ nea
 $t=\TkEleven$. Times are in units of $\sqrt{l/g}$.}
 \label{fig:snap}
 \end{figure}
+\fi
 
 Figure~\ref{fig:step}(a) shows $d(t)$ for a selection of steps. Each curve rises
 through many orders of magnitude at the same average rate and then saturates. The curves are evenly spaced, and Fig.~\ref{fig:step}(b) shows why:
@@ -338,13 +361,28 @@ cancels, so the curves show the effect of roundoff alone.}
 \end{figure}
 
 The smallest precisions are excluded from the fit for a reason worth showing
-students. With $p=11$ and $h=2^{-12}$ the pendulum \emph{never moves}. The first
-increment to $\theta_1=\pi/2$ is smaller than half a unit in the last of eleven
-bits, the sum rounds back to $\pi/2$, and the computed pendulum remains
-horizontal forever. With the same eleven bits and $h=2^{-8}$ it falls. Here a
-smaller step has not reduced the error but made it total, and no analysis
-based on small perturbations describes what happens. It is an extreme case of the
-tendency expressed by the negative sign in Eq.~(\ref{eq:Tp}).
+students. With $p=11$ and $h=2^{-12}$ the pendulum \emph{never moves}, and the way
+it fails repays a minute's thought. The velocity does evolve at first: $\omega_1$
+falls by exactly $h$ at every step for 2048 steps. At $t=\tfrac12$ it reaches
+$-\tfrac12$, where $h$ is half a unit in the last place of $\omega_1$; the sum is
+a tie, round-to-even returns $-\tfrac12$, and the velocity is frozen. From then on
+the increment to the angle is $h\,|\omega_1|=2^{-13}$, a quarter of the $2^{-11}$
+needed to change the last of eleven bits in $\theta_1=\pi/2$, and the computed
+pendulum hangs horizontal forever with a constant velocity that produces no
+motion. With the same eleven bits and $h=2^{-8}$ the velocity would not freeze
+until $|\omega_1|=8$, the increment $h\,|\omega_1|$ first exceeds $2^{-11}$ at
+$t=0.129$, and the pendulum falls.
+\ifdefined\shortversion\else
+The pattern is general for this release. The
+velocity freezes at $2^{p-k}$ and the angle needs $|\omega_1|>2^{k-p}$, so the
+pendulum stalled for every $h<2^{-p}$ that we tried and moved for every
+$h>2^{-p}$; at $h=2^{-p}$ the increment is itself a tie, and the outcome depends
+on the last bit of $\pi/2$.
+\fi
+Here a smaller step has not reduced the error but
+made it total, and no analysis based on small perturbations describes what
+happens. It is an extreme case of the tendency expressed by the negative sign in
+Eq.~(\ref{eq:Tp}).
 
 \subsection{Four measurements of the Lyapunov exponent}
 
@@ -434,8 +472,13 @@ reached already at $h=2^{-\kBestSingle}$, and by $h=2^{-17}$ it has fallen to
 \subsection{Energy}
 \label{sec:energy}
 
+\ifdefined\shortversion
+Consider the two errors of an ordinary double-precision run at $h=2^{-10}$.
+\else
 Figure~\ref{fig:energy} compares the two errors for an ordinary double-precision
-run at $h=2^{-10}$. The error in the energy grows slowly, through the secular
+run at $h=2^{-10}$.
+\fi
+The error in the energy grows slowly, through the secular
 drift of a non-symplectic method, and at the end of the run is still below
 $10^{-\dEexp}$. The error in the position reaches the size of the apparatus at
 $t\approx\TdoubleKten$. The reason is geometric. Energy constrains the state
@@ -443,6 +486,7 @@ to a three-dimensional surface in the four-dimensional phase space, and the
 divergence of nearby trajectories takes place within that surface. A computed
 state can drift an arbitrary distance along it without leaving it.
 
+\ifdefined\shortversion\else
 \begin{figure}
 \includegraphics[width=\columnwidth]{fig6_energy}
 \caption{Error in the position of the lower bob and error in the energy for one
@@ -451,6 +495,7 @@ better than a part in $10^{\dEexp}$ throughout, while the trajectory is lost nea
 $t=\TdoubleKten$.}
 \label{fig:energy}
 \end{figure}
+\fi
 
 \section{Discussion}
 
@@ -461,10 +506,14 @@ Eq.~(\ref{eq:Tk}), extending the horizon by $\Delta T$ requires
 $\Delta k=\lambda\,\Delta T/(4\ln2)$, so the work is multiplied by
 $e^{\lambda\Delta T/4}$; to stay on the optimum of Eq.~(\ref{eq:Tmax}) the
 precision must rise as well, by about $\lambda\,\Delta T\,(4+\gamma)/(4\ln2)$
-bits. For this pendulum, doubling the horizon attainable in double precision
-multiplies the number of steps by roughly $e^{\lambda T_{\max}/4}\approx\costFactor$
-and calls for some \extraBits\ additional bits. The horizon grows as the logarithm
-of the effort spent on it. A method of order $n$ replaces the 4 by $n$, which is
+bits. Which $\lambda$ to use depends on the interval in question. Doubling the
+horizon attainable in double precision means extrapolating beyond the times
+sampled here, for which the long-time exponent \lamBen\ is the appropriate rate:
+the number of steps is multiplied by roughly
+$e^{\lambda T_{\max}/4}\approx\costFactor$ and some \extraBits\ additional bits
+are called for. At the finite-time rate \lamStep\ measured over the first 160 time
+units the figures would be nearer \costFactorFT\ and \extraBitsFT. Either way the
+horizon grows as the logarithm of the effort spent on it. A method of order $n$ replaces the 4 by $n$, which is
 the real argument for high-order integrators in this setting. We checked the low
 end. At a fixed early time the error of forward Euler scales as $h^{\ordEuler}$,
 that of the explicit midpoint rule as $h^{\ordMid}$, and that of RK4 as
@@ -472,9 +521,10 @@ $h^{\rkOrder}$, and the horizons lengthen in proportion: forward Euler with
 $h=2^{-16}$ is accurate for \TEulerFine\ time units, which is less than the
 \TRKcoarse\ that RK4 achieves with $h=2^{-4}$ and a thousandth of the work.
 
-In everyday units the result is easy to remember. For rods one meter long
-$\lambda=\lamSI~\mathrm{s^{-1}}$, so reducing the step tenfold buys
-$4\ln10/\lambda\approx\decadeSI$~s of accurate motion, at ten times the cost.
+In everyday units the result is easy to remember. For rods one meter long the
+long-time exponent is $\lambda=\lamSI~\mathrm{s^{-1}}$, so reducing the step
+tenfold buys $4\ln10/\lambda\approx\decadeSI$~s of accurate motion, or
+\decadeSIFT~s at the finite-time rate, at ten times the cost.
 
 \subsection{What is still right after the horizon}
 
@@ -491,6 +541,14 @@ the dynamics is the right note on which to leave a class.
 
 \subsection{Use in a course}
 
+\ifdefined\shortversion
+The exercise suits an upper-division course in computational physics, mechanics
+or numerical analysis. The program is the usual RK4 with the number type changed,
+and all but the two finest reference runs complete in minutes on a laptop.
+Students with only hardware arithmetic can still do the third experiment, using
+double precision at the best step of Table~\ref{tab:best} as the reference for
+single precision.
+\else
 The exercise suits a course in computational physics, classical mechanics or
 numerical analysis at the upper-division level, after students have met RK4 and
 floating-point numbers. The program is short, since the integrator is the usual
@@ -502,6 +560,7 @@ precision. The original version of this project was carried out in exactly that
 spirit, with decimal steps and a handful of precisions, and the logarithmic law
 was evident even there: each tenfold reduction of the step bought between five
 and ten seconds.
+\fi
 
 \section{Suggested problems}
 
@@ -518,6 +577,7 @@ exponentially. What does Eq.~(\ref{eq:horizon}) become in that case?
 steps and determine $\gamma$. Then replace the update
 $\bm y\leftarrow\bm y+\Delta\bm y$ by compensated summation\cite{higham2002} and
 determine it again.
+\ifdefined\shortversion\else
 \item \emph{A symplectic method.} Integrate with the implicit midpoint rule,
 which is symplectic. Show that the energy error no longer drifts, and compare the
 horizon with that of the explicit midpoint rule at the same step. Does
@@ -526,6 +586,7 @@ preserving the geometry of phase space help with predicting the trajectory?
 Lorenz equations with the standard parameters, for which
 $\lambda\approx0.906$, and predict the double-precision horizon before measuring
 it.
+\fi
 \item \emph{Shadowing.} Compute the time average of the kinetic energy over
 $10^4$ time units in single and in double precision with $h=2^{-7}$. We find
 1.357 and 1.358 in units of $mgl$. Explain why the two agree to a part in a

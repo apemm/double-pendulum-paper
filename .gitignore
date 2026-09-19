@@ -16,3 +16,6 @@ data/*.log
 # Python
 __pycache__/
 *.pyc
+*.buildlog
+supplement_anonymous/
+supplement_anonymous.zip

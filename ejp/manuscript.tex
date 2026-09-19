@@ -22,7 +22,7 @@
 simulated double pendulum: a student computational project}
 \author{Luke Wang and Arjun Pemmasani\\[4pt]
 \small Harvey Mudd College, Claremont, CA 91711, United States of America\\
-\small E-mail: \texttt{arjun.pemmasani@gmail.com}}
+\small E-mail: \texttt{apemmasani@hmc.edu}}
 \date{}
 
 \begin{document}
@@ -297,10 +297,18 @@ only roundoff is seen.}
 
 The lowest precisions were left out of the fit, and the reason was the most
 memorable moment of the project. With $p=11$ and $h=2^{-12}$ the pendulum never
-moves. The first increment to $\theta_1=\pi/2$ is less than half a unit in the
-last of eleven bits, the sum rounds back to $\pi/2$, and the pendulum hangs
-horizontally for ever. With the same eleven bits and $h=2^{-8}$ it falls. A
-smaller step has made the error total.
+moves. The velocity does evolve at first: $\omega_1$ falls by exactly $h$ per
+step for 2048 steps, until at $t=\tfrac12$ it reaches $-\tfrac12$, where $h$ is
+half a unit in the last place of $\omega_1$ and round-to-even freezes it. The
+increment to the angle is then $h\,|\omega_1|=2^{-13}$ for ever, a quarter of the
+$2^{-11}$ needed to change the last of eleven bits in $\theta_1=\pi/2$, and the
+pendulum hangs horizontally with a constant velocity that produces no motion.
+With the same eleven bits and $h=2^{-8}$ the increment first exceeds $2^{-11}$ at
+$t=0.129$ and the pendulum falls. The pattern is general for this release: the
+velocity freezes at $2^{p-k}$ and the angle needs $|\omega_1|>2^{k-p}$, so the
+pendulum stalled for every $h<2^{-p}$ we tried and moved for every $h>2^{-p}$,
+while at $h=2^{-p}$ the increment is itself a tie and the outcome depends on the
+last bit of $\pi/2$. A smaller step has made the error total.
 
 \subsection{The Lyapunov exponent four ways}
 
@@ -404,11 +412,15 @@ equation~(\ref{eq:Tk}), a gain of $\Delta T$ needs
 $\Delta k=\lambda\Delta T/(4\ln2)$ and multiplies the work by
 $e^{\lambda\Delta T/4}$, and the precision must rise by about
 $\lambda\Delta T(4+\gamma)/(4\ln2)$ bits to stay at the optimum. Doubling the
-double-precision horizon of this pendulum would multiply the number of steps by
-about \costFactor\ and need some \extraBits\ more bits. The horizon grows as the
-logarithm of the effort. In everyday units, $\lambda=\lamSI$~s$^{-1}$ for
-one-metre rods, and a tenfold reduction of the step buys
-$4\ln10/\lambda\approx\decadeSI$~s, which is what we saw in our first crude runs.
+double-precision horizon of this pendulum means extrapolating beyond the times
+sampled, so we use the long-time exponent \lamBen: the number of steps is
+multiplied by about \costFactor\ and some \extraBits\ more bits are needed. At the
+finite-time rate \lamStep\ of the first 160 time units the figures would be
+nearer \costFactorFT\ and \extraBitsFT. Either way the horizon grows as the
+logarithm of the effort. In everyday units the long-time exponent is
+$\lambda=\lamSI$~s$^{-1}$ for one-metre rods, and a tenfold reduction of the step
+buys $4\ln10/\lambda\approx\decadeSI$~s (\decadeSIFT~s at the finite-time rate),
+which is what we saw in our first crude runs.
 
 A method of order $n$ replaces 4 by $n$. We verified that the error of forward
 Euler at fixed time scales as $h^{\ordEuler}$ and that of the explicit midpoint
