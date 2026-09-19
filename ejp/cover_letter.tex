@@ -1,0 +1,53 @@
+\documentclass[11pt]{letter}
+\usepackage[margin=1in]{geometry}
+\input{../numbers.tex}
+\signature{Arjun Pemmasani\ on behalf of both authors}
+\address{Harvey Mudd College\ Claremont, CA 91711, USA\ arjun.pemmasani@gmail.com}
+\begin{document}
+\begin{letter}{The Editor\ European Journal of Physics}
+\opening{Dear Editor,}
+
+We submit the manuscript ``Step size, floating-point precision and the
+predictability horizon of a simulated double pendulum: a student computational
+project'' for consideration as a Paper in the Mechanics section of
+\emph{European Journal of Physics}.
+
+The manuscript describes a student computational project, which the journal's
+scope names among the contributions it welcomes. It began as our final project in
+an undergraduate course on numerical analysis. The question is how long a
+numerical simulation of a chaotic system remains the solution of the equations
+it was given. By integrating the double pendulum in arbitrary-precision
+arithmetic we vary the step and the floating-point precision independently,
+measure the effects of truncation and roundoff separately, and show that the time
+for which a run is accurate follows a single logarithmic law governed by the
+largest Lyapunov exponent. The numerical error itself then yields the exponent,
+in agreement with the standard two-trajectory method.
+
+\textbf{Intended level.} Advanced undergraduate, in physics or applied
+mathematics. The reader needs the fourth-order Runge--Kutta method, the idea of a
+floating-point number, and the definition of a Lyapunov exponent.
+
+\textbf{Usefulness to physics education.} The project gives students an
+operational meaning for the Lyapunov exponent in terms of quantities they
+control; it separates truncation error from roundoff error, which are usually
+taught together and rarely distinguished in practice; and it corrects two common
+beliefs, that a smaller step always gives a better answer and that conservation
+of energy certifies a trajectory. The program is short, the runs take minutes,
+and the manuscript sets out how the project can be run with a class and
+extended.
+
+\textbf{Relation to previous work in the journal.} D'Alessio, \emph{Eur.\ J.\
+Phys.}\ \textbf{44} (2023) 015002, treats the double pendulum analytically,
+numerically and experimentally and computes its Lyapunov spectrum. Our manuscript
+is complementary. It takes the dynamics as given and studies the reliability of
+the numerical method, which that paper and the earlier pedagogical literature
+use as a tool.
+
+The manuscript is about 3300 words, with six figures and two tables. Code, data
+and two animations are supplied as supplementary material. The work is original,
+has not been published, and is not under consideration elsewhere. Both authors
+have approved the submission and declare no conflict of interest.
+
+\closing{Yours faithfully,}
+\end{letter}
+\end{document}
