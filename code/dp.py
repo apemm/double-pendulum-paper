@@ -51,8 +51,9 @@ def integrate(prec: int, k: int, t_end: int, y0=None, save_k: int = SAVE_K):
     """RK4 with step 2**-k and p-bit arithmetic from t = 0 to t_end.
 
     Returns a list of (theta1, theta2, omega1, omega2) tuples of mpfr values
-    sampled every 2**-save_k time units, including t = 0. Conversion to double for plotting is left to the caller so that no
-    precision is lost before differences are taken.
+    sampled every 2**-save_k time units, including t = 0. Conversion to double
+    for plotting is left to the caller, so that no precision is lost before
+    differences are taken.
     """
     if k < save_k:
         raise ValueError("step must not exceed the output interval")
