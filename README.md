@@ -103,11 +103,25 @@ What remains ours is the classroom treatment: separating the two errors with the
 precision as a program parameter, measuring each, the collapse onto a perturbed
 trajectory, the stall, and doing all of it on the double pendulum.
 
-Two things to do before submitting. Read Calvao and Penna in full: one search
-reported that they judge integrators by energy error and notice a best step near
-1e-4, and if so that deserves a sentence of direct contrast, but only the
-abstract could be checked here. Read Wild's thesis, whose PDF could not be
-fetched, so that the sentence describing it is accurate.
+Wild's thesis has now been read in full, and the papers describe it from the
+text. The thesis uses the same ingredients (RK4, MPFR, the IEEE significand widths 11,
+24, 53, 64 and 113, comparison with the 113-bit run at the same step) and
+observed three things found here as well: wider formats stay accurate for
+longer, the 11-bit solution is constant at h = 1e-4 (attributed there to
+underflow; the mechanism is the rounding stall described above), and replacing
+h = 1e-4 by 2^-13 keeps the 53- and 64-bit runs accurate for longer. The results
+are qualitative, judged by eye from the l2 norm of the state, and relating the
+divergence time to the Lyapunov exponent is listed as future work. Both papers
+cite the thesis at each of those three points.
+
+One thing still to do. Calvao and Penna is not available online and has been
+requested. What the papers say about it (that a step of 1e-4 served RK4 best on
+this system and smaller steps gave less precision) rests on two secondary
+sources that agree: Wild's thesis, which took its step size from that paper and
+says so, and one literature search that reported the same. Check that sentence
+against the paper itself when it arrives, and see whether they judged accuracy by
+energy error, which would deserve a sentence of contrast with the energy result
+here.
 
 ## Changes from the original project, and why
 
@@ -165,7 +179,8 @@ numbers.tex          generated; every quoted number
 
 ## Before submitting
 
-- Confirm Luke Wang's affiliation line and which author is corresponding.
+- Authorship: Arjun Pemmasani is first and corresponding author, Luke Wang second.
+  Confirm Luke's affiliation line.
 - AJP: upload `ajp/manuscript.pdf` (anonymous), the three figures it uses
   (`fig2_step_sweep`, `fig4_horizons`, `fig5_turnover`), `ajp/alt_text.md`, and
   `supplement_anonymous.zip`. Do not upload this README or link this repository,

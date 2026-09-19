@@ -20,7 +20,7 @@
 
 \title{Step size, floating-point precision and the predictability horizon of a
 simulated double pendulum: a student computational project}
-\author{Luke Wang and Arjun Pemmasani\\[4pt]
+\author{Arjun Pemmasani and Luke Wang\\[4pt]
 \small Harvey Mudd College, Claremont, CA 91711, United States of America\\
 \small E-mail: \texttt{apemmasani@hmc.edu}}
 \date{}
@@ -88,10 +88,11 @@ Lyapunov exponent, and Mendes and Nepomuceno~\cite{mendes2016} estimated the
 exponent from the divergence of two equivalent computations that round
 differently. These studies treat the Lorenz and similar systems and are written
 for researchers. For students, Hayes~\cite{hayes2004} discussed what a computed
-chaotic trajectory means, Faux and Godolphin~\cite{faux2021} collected
-floating-point pitfalls, and Wild~\cite{wild2019} varied the word size in
-simulations of the double pendulum in an undergraduate thesis. However, in our
-experience,
+chaotic trajectory means, and Faux and Godolphin~\cite{faux2021} collected
+floating-point pitfalls. In an undergraduate thesis, Wild~\cite{wild2019}
+integrated the double pendulum with RK4 at the IEEE significand widths and
+observed that the wider formats follow a 113-bit solution for longer, but did not
+relate this time to the Lyapunov exponent. However, in our experience,
 students who simulate a double pendulum are seldom asked how long their result
 can be believed, and the informal checks they apply, such as watching the
 energy, cannot answer this question.
@@ -157,7 +158,9 @@ The choice of step proved important, since our first version used decimal steps
 such as $h=10^{-4}$ and no binary format represents $10^{-4}$ exactly. Hence,
 runs at different precisions were also using slightly different steps. We now
 take $h=2^{-k}$, which is exact at every precision, so changing $p$ changes only
-the arithmetic.
+the arithmetic. Wild~\cite{wild2019} observed the effect of this choice, since
+replacing $h=10^{-4}$ by $h=2^{-13}$ kept the 53-bit and 64-bit solutions close
+to the 113-bit solution for longer.
 
 \subsection{Measuring error without an exact solution}
 
@@ -316,7 +319,9 @@ only roundoff is seen.}
 
 We left the lowest precisions out of the fit because with $p=11$ and
 $h=2^{-12}$ the pendulum never moves (the result we remember best from the
-project). At first the velocity $\omega_1$ falls by exactly $h$ per step for
+project). Wild~\cite{wild2019} observed the same constant solution with eleven
+bits and $h=10^{-4}$. The cause is not underflow, since the exponent range of
+MPFR is never approached. At first the velocity $\omega_1$ falls by exactly $h$ per step for
 2048 steps. At $t=\tfrac12$ it reaches $-\tfrac12$, where round-to-even freezes
 the velocity because $h$ is half a unit in the last place of $\omega_1$. The
 increment to the angle is then $h\,|\omega_1|=2^{-13}$ for ever, a quarter of
@@ -383,7 +388,9 @@ longest horizon is \TBestDouble\ time units (\TBestDoubleSec~s for one-metre
 rods), reached at $h=2^{-\kBestDouble}$. Reducing the step further to $2^{-17}$
 costs \kRatio\ times as much and gives \TdoubleFine. In single precision the best
 horizon is \TBestSingle, at $h=2^{-\kBestSingle}$, and by $h=2^{-17}$ it has
-fallen to \TsingleFine.
+fallen to \TsingleFine. Calv\~ao and Penna~\cite{calvao2015} reported the same
+turnover for RK4 on this system, where a step of $10^{-4}$ served best and
+smaller steps gave less precision.
 
 \begin{figure}[t]
 \centering

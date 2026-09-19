@@ -26,9 +26,9 @@ Step size, floating-point precision, and the Lyapunov exponent}
 
 \ifanon
 \else
-\author{Luke Wang}
 \author{Arjun Pemmasani}
 \email{apemmasani@hmc.edu}
+\author{Luke Wang}
 \affiliation{Harvey Mudd College, Claremont, California 91711}
 \fi
 
@@ -103,9 +103,10 @@ exponent from the divergence of two equivalent computations that round
 differently. These studies treat the Lorenz and similar systems and are written
 for researchers. In this journal, Hayes\cite{hayes2004} discussed what a
 computed chaotic trajectory means, and Faux and Godolphin\cite{faux2021}
-collected floating-point pitfalls for students. Wild\cite{wild2019} varied the
-word size in simulations of the double pendulum in an undergraduate thesis.
-However, we have not found a treatment at the level of an undergraduate course in which the student
+collected floating-point pitfalls for students. In an undergraduate thesis,
+Wild\cite{wild2019} integrated the double pendulum with RK4 at the IEEE
+significand widths and observed that the wider formats follow a 113-bit solution
+for longer, but did not relate this time to the Lyapunov exponent. However, we have not found a treatment at the level of an undergraduate course in which the student
 separates the two sources of error, measures each, and connects both to the
 Lyapunov exponent, so we give such a treatment here.
 \ifdefined\longversion
@@ -182,7 +183,9 @@ We choose steps $h=2^{-k}$ because a power of two is represented exactly at
 every precision, so lowering $p$ changes only the arithmetic. A decimal step
 such as $10^{-4}$ would be rounded differently at each precision, so runs
 intended to differ only in their arithmetic would also use slightly different
-steps.
+steps. Wild\cite{wild2019} observed the effect of this choice, since replacing
+$h=10^{-4}$ by $h=2^{-13}$ kept the 53-bit and 64-bit solutions close to the
+113-bit solution for longer.
 
 \subsection{Reference solution and measure of error}
 
@@ -379,7 +382,9 @@ cancels, so the curves show the effect of roundoff alone.}
 
 We exclude the smallest precisions from the fit because with $p=11$ and
 $h=2^{-12}$ the pendulum \emph{never moves}, and the way it fails is worth
-explaining to students. The velocity $\omega_1$ at first falls by exactly $h$ at
+explaining to students. Wild\cite{wild2019} observed the same constant solution
+with eleven bits and $h=10^{-4}$. The cause is not underflow, since the exponent
+range of MPFR is never approached. The velocity $\omega_1$ at first falls by exactly $h$ at
 every step for 2048 steps. At $t=\tfrac12$ it reaches $-\tfrac12$, where $h$ is
 half a unit in the last place of $\omega_1$, so the sum is a tie, round-to-even
 returns $-\tfrac12$, and the velocity is frozen. From then on the increment to
@@ -483,7 +488,9 @@ $h=2^{-\kBestDouble}$. A student who responds to a doubtful result by reducing
 the step to $2^{-17}$ does \kRatio\ times the work, but the horizon is
 \TdoubleFine, so nothing is gained. In single precision the horizon is
 \TBestSingle\ time units, reached already at $h=2^{-\kBestSingle}$, and by
-$h=2^{-17}$ it has fallen to \TsingleFine.
+$h=2^{-17}$ it has fallen to \TsingleFine. Calv\~ao and Penna\cite{calvao2015}
+reported the same turnover for RK4 on this system, where a step of $10^{-4}$
+served best and smaller steps gave less precision.
 
 \subsection{Energy}
 \label{sec:energy}
