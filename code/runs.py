@@ -21,7 +21,7 @@ RAW = Path(__file__).resolve().parents[1] / "data" / "raw"
 
 T_MAIN = 160      # time units; 51 s for a 1 m pendulum
 T_PREC = 240      # the precision sweep at fixed step can be followed for longer
-P_REF = 237       # significand width of IEEE binary256, as in the original runs
+P_REF = 237       # significand width of IEEE binary256
 K_REF = 18        # reference step 2**-18 = 3.8e-6
 
 # A perturbation of 2**-170 = 6.7e-52 in one coordinate stays in the linear

@@ -31,7 +31,8 @@ CODE = ["dp.py", "runs.py", "lyapunov.py", "orders.py", "shadow_check.py", "lowp
         "stall_grid.py", "analysis.py", "figures.py", "animate.py"]
 DATA = ["summary.json", "analysis.npz", "lyapunov.npz", "orders.json", "shadow_check.json",
         "lowprec.json", "stall_grid.json"]
-ANONYMOUS_FILES = ["ajp/manuscript.pdf", "ajp/manuscript_long.pdf", "ajp/alt_text.md"]
+ANONYMOUS_FILES = ["ajp/manuscript.pdf", "ajp/manuscript_long.pdf", "ajp/alt_text.md",
+                   "ajp/upload/fig1.pdf", "ajp/upload/fig2.pdf", "ajp/upload/fig3.pdf"]
 
 # The anonymous manuscript cites a paper by P. Wang and J. Li, who are not the
 # authors. Those citation strings are removed before the scan, so that the bare
@@ -92,13 +93,19 @@ identical bit for bit.
 `data/analysis.npz` holds every curve plotted, as the base-ten logarithm of the
 separation sampled every 1/16 time unit. `data/summary.json` holds the horizons
 and fitted slopes. `numbers.tex` holds every number quoted in the text, as
-written by `analysis.py`.
+written by `analysis.py`, except the two long-time averages of the shadowing
+check, which are in `data/shadow_check.json`.
 
 Units: time in sqrt(l/g), length in l, energy in m g l.
 """
 
 
 def build():
+    # The figure files the submission uses, named by the number they carry in it.
+    up = ROOT / "ajp" / "upload"
+    up.mkdir(exist_ok=True)
+    for n, f in enumerate(("fig2_step_sweep", "fig4_horizons", "fig5_turnover"), start=1):
+        shutil.copy2(ROOT / "figures" / f"{f}.pdf", up / f"fig{n}.pdf")
     if OUT.exists():
         shutil.rmtree(OUT)
     for sub in ("code", "data", "animations"):

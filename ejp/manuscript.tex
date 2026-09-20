@@ -45,7 +45,7 @@ equal to the growth rate of a perturbed trajectory over the same interval and
 within 20\% of the long-time exponent \lamBen\ from the standard two-trajectory
 method. In double precision the pendulum cannot be followed for more than about
 \TBestDouble\ natural time units with this method, but its energy stays constant
-to a part in $10^{\dEexp}$ throughout. The project is suitable for advanced
+to $10^{-\dEexp}$ in units of $mgl$ throughout. The project is suitable for advanced
 undergraduates in physics or applied mathematics and requires only a short
 program. It shows that numerical error is a perturbation like any other, and
 that its growth measures the dynamics.
@@ -150,7 +150,7 @@ operation correctly to a significand of $p$ bits, where $p$ is set by the
 program. Our first version used Julia's \texttt{BigFloat} type and the present
 version uses Python with \texttt{gmpy2}, and both are thin wrappers around MPFR.
 With $p=24$, 53, 64, and 113 the significand has the width of the IEEE single,
-double, extended, and quadruple formats~\cite{goldberg1991}. With $p=237$, the
+double, extended, and quadruple formats~\cite{ieee754,goldberg1991}. With $p=237$, the
 width of the 256-bit format, the rounding unit is $10^{-71}$, so the arithmetic
 is exact for our purposes.
 
@@ -158,7 +158,7 @@ The choice of step proved important, since our first version used decimal steps
 such as $h=10^{-4}$ and no binary format represents $10^{-4}$ exactly. Hence,
 runs at different precisions were also using slightly different steps. We now
 take $h=2^{-k}$, which is exact at every precision, so changing $p$ changes only
-the arithmetic. Wild~\cite{wild2019} observed the effect of this choice, since
+the arithmetic. Wild~\cite{wild2019} observed the effect of this choice when
 replacing $h=10^{-4}$ by $h=2^{-13}$ kept the 53-bit and 64-bit solutions close
 to the 113-bit solution for longer.
 
@@ -166,7 +166,8 @@ to the 113-bit solution for longer.
 
 We measure the error of a run by the distance $d(t)$, in units of $l$, between
 its lower bob and that of a reference run. Because both bobs lie within $2l$ of
-the pivot, $d$ saturates near 4 when two runs have become unrelated. The
+the pivot, $d$ cannot exceed 4, and its running maximum levels off near that
+bound when two runs have become unrelated. The
 \emph{horizon} $T$ of a run is the first time at which $d\ge10^{-2}$, which is
 about when two superimposed animations can be told apart by eye.
 
@@ -284,7 +285,8 @@ little from the next halving and a horizon that falls just after gains a great
 deal. The grey staircase in figure~\ref{fig:hor}(a) is the horizon predicted for
 every $h$ from the measured growth of the $2^{-170}$ perturbation, where the one
 constant $A$ of equation~(\ref{eq:error}) is fixed by the collapse. The
-staircase passes through the measured horizons step for step.
+staircase tracks the measured horizons to within a few time units, and its
+risers fall where the horizons jump.
 
 \begin{figure}[t]
 \centering
@@ -304,9 +306,12 @@ Figure~\ref{fig:prec} shows the second experiment at $h=2^{-12}$, where the
 pattern is that of figure~\ref{fig:step} with $2^{-p}$ in place of $h^4$. The
 horizons in figure~\ref{fig:hor}(b) have slope $\slopePrec\pm\slopePrecSE$ time
 units per bit, so equation~(\ref{eq:Tp}) gives $\lambda=\lamPrec\pm\lamPrecSE$.
+The fit uses $24\le p\le80$, since below 24 the horizons fall inside the slow
+start from rest and above 80 they lie beyond the 160 time units over which the
+growth of the perturbation was measured.
 Changing the step by a factor of 256 shifts the line only slightly. Comparing
 errors at fixed early times for $h=2^{-8}$ and $2^{-16}$ gives
-$\gamma\approx\gammaRound$, which is close to the random-walk value.
+$\gamma\approx\gammaRound$, close to the random-walk value of $\tfrac12$.
 
 \begin{figure}[t]
 \centering
@@ -339,38 +344,43 @@ of $\pi/2$.
 
 Table~\ref{tab:lambda} compares the estimates. The conventional value is from
 the two-trajectory method of Benettin
-\textit{et al}~\cite{benettin1980a,benettin1980b,wolf1985}. A shadow orbit at
+\textit{et al}~\cite{benettin1976,wolf1985}. A shadow orbit at
 distance $10^{-8}$ is advanced with the fiducial orbit, and once per time unit
 the logarithm of the growth of their separation is accumulated and the shadow is
 returned to its original distance. Over $2\times10^4$ time units this gives
 $\lambda=\lamBen$. Of \nEns\ other states at rest with the same energy,
 \nChaotic\ are chaotic with median \lamBenEns, and \nReg\ lie on regular orbits.
-The direct growth rate of the $2^{-170}$ perturbation is \lamDir\ over the whole
-run and \lamDirWin\ for $t>20$, after the slow start from rest.
+The least-squares slope of $\ln d$ against $t$ for the $2^{-170}$ perturbation
+is \lamDir\ over the whole run and \lamDirWin\ for $t>20$, after the slow start
+from rest, which is the interval in which every horizon falls.
 
 The two values obtained from numerical error agree with each other and with the
-direct growth rate over the same interval. All three exceed the long-time value
-by some \lamExcess\%. This is not a failure of the method, since a horizon
+direct growth rate over the same interval. All three exceed the long-time value,
+by \lamExcessLo\ to \lamExcessHi\%. This is not a failure of the method, since a horizon
 samples the growth rate only up to the horizon, and over its first 160 time
 units this trajectory is more unstable than on average. The exponent proper is a
-long-time limit, and finite-time values scatter about this limit. Students who
+long-time limit, and finite-time values scatter about this limit. The standard
+errors quoted do not include this scatter, since the value from precision varies
+from \lamPrecCoarse\ to \lamPrec\ with the step and the value from the step
+varies from \lamStepThrLo\ to \lamStepThrHi\ with the threshold that defines the
+horizon. Students who
 picture exponential divergence as uniform do well to learn this distinction.
 
 \begin{table}[t]
 \centering
 \caption{Largest Lyapunov exponent for release from rest with both rods
 horizontal, in units of $\sqrt{g/l}$. The last three rows sample only the first
-160 time units, over which the mean growth rate is \lamDirEarly\ in the first half
-and \lamDirLate\ in the second. Uncertainties are standard errors of the fitted
-slopes. At $h=2^{-8}$ and $2^{-16}$ the last row becomes \lamPrecCoarse\ and
-\lamPrecFine.}
+160 time units, over which the least-squares slope of $\ln d$ against $t$ is
+\lamDirEarly\ over the first half and \lamDirLate\ over the second.
+Uncertainties are standard errors of the fitted slopes, and the long-time value
+is uncertain by about \lamBenSE.}
 \label{tab:lambda}
 \begin{tabular}{lc}
 \toprule
 Method & $\lambda$\\
 \midrule
 Two-trajectory method, $2\times10^4$ time units & \lamBen\\
-Growth of a $2^{-170}$ perturbation & \lamDir\\
+Growth of a $2^{-170}$ perturbation, $t>20$ & \lamDirWin\\
 Horizon against step, equation (\ref{eq:Tk}) & $\lamStep\pm\lamStepSE$\\
 Horizon against precision, equation (\ref{eq:Tp}) & $\lamPrec\pm\lamPrecSE$\\
 \bottomrule
@@ -388,9 +398,10 @@ longest horizon is \TBestDouble\ time units (\TBestDoubleSec~s for one-metre
 rods), reached at $h=2^{-\kBestDouble}$. Reducing the step further to $2^{-17}$
 costs \kRatio\ times as much and gives \TdoubleFine. In single precision the best
 horizon is \TBestSingle, at $h=2^{-\kBestSingle}$, and by $h=2^{-17}$ it has
-fallen to \TsingleFine. Calv\~ao and Penna~\cite{calvao2015} reported the same
-turnover for RK4 on this system, where a step of $10^{-4}$ served best and
-smaller steps gave less precision.
+fallen to \TsingleFine. Calv\~ao and Penna~\cite{calvao2015}, judging RK4 on this
+system by its energy error, likewise found an optimum near a step of $10^{-4}$
+with smaller steps giving less precision, and the horizon $T$ shows the same
+turnover in the trajectory itself.
 
 \begin{figure}[t]
 \centering
@@ -404,7 +415,9 @@ longer helps.}
 \begin{table}[t]
 \centering
 \caption{Longest horizon attainable with RK4 at each precision. The last column
-is for $l=1$~m.}
+is for $l=1$~m. Horizons are first-crossing times and fluctuate by about $\pm5$
+time units from step to step near the optimum, so the best step is known only to
+within a halving or two.}
 \label{tab:best}
 \begin{tabular}{lccc}
 \toprule
@@ -419,8 +432,9 @@ Significand bits $p$ & Best step & $T_{\max}\sqrt{g/l}$ & $T_{\max}$ (s)\\
 
 Figure~\ref{fig:energy} shows both errors for an ordinary double-precision run
 with $h=2^{-10}$. The energy error drifts slowly upward, as expected of a
-non-symplectic method, and never exceeds $10^{-\dEexp}$, but the trajectory is
-lost at $t\approx\TdoubleKten$. Energy confines the state to a three-dimensional
+non-symplectic method, and never exceeds $10^{-\dEexp}$ in units of $mgl$, but the position error
+passes $10^{-2}l$ at $t\approx\TdoubleKten$ and grows to the length of a rod by
+$t\approx\TdoubleRod$. Energy confines the state to a three-dimensional
 surface in phase space, and chaotic divergence takes place within that surface,
 so a computed state can wander arbitrarily far without leaving the surface.
 
@@ -454,16 +468,19 @@ we saw in our first crude runs.
 A method of order $n$ replaces 4 by $n$, and we verified that the error of
 forward Euler at fixed time scales as $h^{\ordEuler}$ and that of the explicit
 midpoint rule as $h^{\ordMid}$. Forward Euler with $h=2^{-16}$ has a horizon of
-\TEulerFine\ time units, shorter than the \TRKcoarse\ of RK4 with $h=2^{-4}$, so
-for chaotic problems the case for high-order methods is stronger than usual.
+only \TEulerFine\ time units, shorter than the \TRKcoarse\ of RK4 with
+$h=2^{-4}$, and its horizons all fall inside the slow start of the motion, so
+its slope against $k$ does not give $\lambda$. For chaotic problems the case for
+high-order methods is stronger than usual.
 
 \subsection{What survives the horizon}
 
 After $T$ the computed trajectory is no longer the solution of the problem
 posed. However, shadowing
-results~\cite{hammel1987,hammel1988,grebogi1990,sauer1997,hayes2004} show that for long
-times it stays close to an exact trajectory with slightly different initial
-data. Hence, averages over the motion are still computed correctly, and the
+results~\cite{hammel1987,hammel1988,grebogi1990,sauer1997,hayes2004} show that it typically
+stays close to an exact trajectory with slightly different initial data for
+times much longer than the horizon. This is the reason to expect that averages
+over the motion are still computed correctly, and the
 first row of table~\ref{tab:lambda} relies on this fact. As a check, we
 computed the time-averaged kinetic energy over $10^4$ time units in single and
 double precision. The two trajectories part after about fifty time units, but

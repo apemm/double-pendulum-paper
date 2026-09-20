@@ -97,9 +97,10 @@ def linfit(x, y):
 
 # Ranges used in the straight-line fits. Coarse steps are left out because RK4
 # is not yet in its asymptotic regime there; the finest is left out because its
-# error is no longer small compared with the reference's. Low precisions are
-# left out because the arithmetic stalls rather than perturbs (see text); high
-# ones because their horizon lies beyond the end of the run.
+# error is no longer small compared with the reference's. Precisions below 24
+# are left out because their horizons fall inside the slow start from rest (the
+# lowest stall altogether), and precisions above 80 because their horizons lie
+# beyond the 160 time units over which the perturbation growth was measured.
 K_FIT = list(range(7, 17))
 P_FIT = [24, 28, 32, 36, 40, 48, 53, 64, 80]
 
@@ -219,7 +220,18 @@ def main():
 
     # energy error of the ordinary double-precision run used in the energy figure
     summary["energy"] = {"max_dE_p053_k10": float(np.max(curves["dE_p053_k10"])),
-                         "horizon_p053_k10": summary["mixed"]["53"]["horizon"][summary["mixed"]["53"]["k"].index(10)]}
+                         "horizon_p053_k10": summary["mixed"]["53"]["horizon"][summary["mixed"]["53"]["k"].index(10)],
+                         "rod_p053_k10": horizon(t_main, curves["m_p053_k10"], 1.0)}
+
+    # Uncertainty of the long-time exponent: the standard error of the mean of
+    # finite-time exponents over consecutive 160-unit windows of the 2e4-unit
+    # two-trajectory run, for the paper's initial condition.
+    L = np.load(ROOT / "data" / "lyapunov.npz")
+    S_cum = L["running"][:, 0] * L["t"]          # accumulated log growth
+    w = int(round(160 / (L["t"][1] - L["t"][0])))
+    blocks = (S_cum[w::w] - S_cum[:-w:w]) / 160.0
+    summary["benettin_se"] = float(blocks.std(ddof=1) / np.sqrt(len(blocks)))
+    summary["benettin_block_sd"] = float(blocks.std(ddof=1))
 
     # exponent gamma of the roundoff term: at fixed precision and fixed early
     # time, how the error changes between steps 2**-8 and 2**-16
@@ -241,7 +253,7 @@ def main():
 
 
 def write_numbers(S):
-    """numbers.tex: every number quoted in either manuscript, as a macro."""
+    """numbers.tex: every number quoted in the manuscript, as a macro."""
     F = S["fits"]
     sec = S["seconds_per_unit_for_1m"]
     L = np.load(ROOT / "data" / "lyapunov.npz")
@@ -290,6 +302,12 @@ def write_numbers(S):
         "lamPrecCoarse": f"{F['precision_by_k']['8']['lambda']:.2f}",
         "lamPrecFine": f"{F['precision_by_k']['16']['lambda']:.2f}",
         "lamExcess": f"{100 * (F['step']['lambda'] / lam - 1):.0f}",
+        "lamExcessLo": f"{min(100 * (x / lam - 1) for x in (F['step']['lambda'], F['precision']['lambda'], S['direct']['c0_20_160']['lambda'])):.0f}",
+        "lamExcessHi": f"{max(100 * (x / lam - 1) for x in (F['step']['lambda'], F['precision']['lambda'], S['direct']['c0_20_160']['lambda'])):.0f}",
+        "lamStepThrLo": f"{min(F['step_by_threshold'].values()):.2f}",
+        "lamStepThrHi": f"{max(F['step_by_threshold'].values()):.2f}",
+        "lamBenSE": f"{S['benettin_se']:.3f}",
+        "TdoubleRod": f"{S['energy']['rod_p053_k10']:.0f}",
         "TsingleFine": f"{S['mixed']['24']['horizon'][S['mixed']['24']['k'].index(17)]:.0f}",
         "collapseSpan": f"{S['collapse']['decades_spanned']:.0f}",
         "collapse": f"{S['collapse']['max_spread_dex']:.2f}",

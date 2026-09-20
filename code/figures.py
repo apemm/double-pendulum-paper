@@ -1,4 +1,4 @@
-"""Static figures for both manuscripts.
+"""Static figures for the manuscript.
 
 Sized for a single journal column (3.37 in) or the full width (6.69 in), with
 no text smaller than 8 pt, written as vector PDF and as 600 dpi PNG. Colours are
@@ -25,7 +25,7 @@ FIG = ROOT / "figures"
 COL, FULL = 3.37, 6.69
 
 plt.rcParams.update({
-    "font.size": 8, "axes.labelsize": 8, "legend.fontsize": 7,
+    "font.size": 8, "axes.labelsize": 8, "legend.fontsize": 8,
     "xtick.labelsize": 8, "ytick.labelsize": 8,
     "font.family": "serif", "mathtext.fontset": "cm",
     "axes.linewidth": 0.6, "lines.linewidth": 1.0,
@@ -70,31 +70,13 @@ def main():
     ln10 = np.log(10.0)
 
     # ------------------------------------------------------------------ 1
-    # Snapshots: three pendulums that differ only in step size.
-    ref = load_traj("h", runs.P_REF, runs.K_REF, runs.T_MAIN)
-    show = [(8, "#d95f02", "--"), (11, "#1b9e77", "-.")]
-    trajs = {k: load_traj("h", runs.P_REF, k, runs.T_MAIN) for k, _, _ in show}
-    T8 = S["step_sweep"]["horizon"]["0.01"][S["step_sweep"]["k"].index(8)]
-    T11 = S["step_sweep"]["horizon"]["0.01"][S["step_sweep"]["k"].index(11)]
-    times = [0.5 * T8, T8 + 6.0, T11 + 6.0]
-    fig, axes = plt.subplots(1, 3, figsize=(FULL, 2.35), sharey=True)
-    for ax, tt in zip(axes, times):
-        i = int(round(tt * 16))
-        for k, colr, ls in show:
-            x1, y1, x2, y2 = bob_xy(trajs[k][i:i + 1])
-            ax.plot([0, x1[0], x2[0]], [0, y1[0], y2[0]], ls, color=colr, lw=1.3,
-                    marker="o", ms=3.5, label=rf"$h=2^{{-{k}}}$")
-        x1, y1, x2, y2 = bob_xy(ref[i:i + 1])
-        ax.plot([0, x1[0], x2[0]], [0, y1[0], y2[0]], "-", color="k", lw=1.3,
-                marker="o", ms=3.5, label=rf"$h=2^{{-{runs.K_REF}}}$")
-        ax.set_aspect("equal")
-        ax.set_xlim(-2.15, 2.15)
-        ax.set_ylim(-2.15, 2.15)
-        ax.set_title(rf"$t={tt:.1f}$", fontsize=8, pad=3)
-        ax.set_xlabel(r"$x/l$")
-    axes[0].set_ylabel(r"$y/l$")
-    axes[0].legend(loc="upper left", frameon=False, handlelength=2.2)
-    save(fig, "fig1_snapshots")
+    # Snapshots: three pendulums that differ only in step size. This is the one
+    # figure that needs the raw trajectories, so it is skipped when they are
+    # absent and everything else is still drawn.
+    if (ROOT / "data" / "raw").exists():
+        snapshots(S)
+    else:
+        print("data/raw is absent, so fig1_snapshots is not drawn; everything else is.")
 
     # ------------------------------------------------------------------ 2
     # Error curves for the step sweep, and their collapse under h**-4.
@@ -229,6 +211,34 @@ def main():
     ax.set_xlabel(r"averaging time $t\,\sqrt{g/l}$")
     ax.set_ylabel(r"$\lambda\,\sqrt{l/g}$")
     save(fig, "fig7_benettin")
+
+
+def snapshots(S):
+    """Three pendulums that differ only in step size; needs data/raw."""
+    ref = load_traj("h", runs.P_REF, runs.K_REF, runs.T_MAIN)
+    show = [(8, "#d95f02", "--"), (11, "#1b9e77", "-.")]
+    trajs = {k: load_traj("h", runs.P_REF, k, runs.T_MAIN) for k, _, _ in show}
+    T8 = S["step_sweep"]["horizon"]["0.01"][S["step_sweep"]["k"].index(8)]
+    T11 = S["step_sweep"]["horizon"]["0.01"][S["step_sweep"]["k"].index(11)]
+    times = [0.5 * T8, T8 + 6.0, T11 + 6.0]
+    fig, axes = plt.subplots(1, 3, figsize=(FULL, 2.35), sharey=True)
+    for ax, tt in zip(axes, times):
+        i = int(round(tt * 16))
+        for k, colr, ls in show:
+            x1, y1, x2, y2 = bob_xy(trajs[k][i:i + 1])
+            ax.plot([0, x1[0], x2[0]], [0, y1[0], y2[0]], ls, color=colr, lw=1.3,
+                    marker="o", ms=3.5, label=rf"$h=2^{{-{k}}}$")
+        x1, y1, x2, y2 = bob_xy(ref[i:i + 1])
+        ax.plot([0, x1[0], x2[0]], [0, y1[0], y2[0]], "-", color="k", lw=1.3,
+                marker="o", ms=3.5, label=rf"$h=2^{{-{runs.K_REF}}}$")
+        ax.set_aspect("equal")
+        ax.set_xlim(-2.15, 2.15)
+        ax.set_ylim(-2.15, 2.15)
+        ax.set_title(rf"$t={tt:.1f}$", fontsize=8, pad=3)
+        ax.set_xlabel(r"$x/l$")
+    axes[0].set_ylabel(r"$y/l$")
+    axes[0].legend(loc="upper left", frameon=False, handlelength=2.2)
+    save(fig, "fig1_snapshots")
 
 
 if __name__ == "__main__":

@@ -1,4 +1,4 @@
-"""Check for suggested problem 6: long-time averages agree across precisions.
+"""Check for the shadowing problem: long-time averages agree across precisions.
 
 Time-averaged kinetic energy over 1e4 time units in single and in double
 precision, RK4 with h = 2**-7, from the initial condition of the paper. The two
