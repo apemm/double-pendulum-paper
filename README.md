@@ -193,9 +193,9 @@ numbers.tex          generated; every quoted number
   `fig3.pdf`, `ajp/alt_text.md`, `supplement_anonymous.zip`, and paste
   `ajp/statement_for_submission_form.md` into the form. Do not upload this README
   or link this repository, since both name the authors.
-- AJP requires disclosure to the editor, in the cover letter, if artificial
-  intelligence was used to generate any of the text. That decision is the
-  authors'.
+- AJP requires disclosure to the editor if artificial intelligence was used to
+  generate any of the text. The cover letter and the manuscript's author
+  declarations both carry the disclosure.
 - EJP: upload `ejp/manuscript.pdf` and the cover letter.
 - Run a fresh literature search on the day. AJP rejects without review for
   missing closely related work, and the search here is current to 19 September

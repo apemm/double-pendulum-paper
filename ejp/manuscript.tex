@@ -32,23 +32,23 @@ simulated double pendulum: a student computational project}
 \noindent We report a computational project, begun in an undergraduate course in
 numerical analysis, that asks for how long a computed trajectory is accurate.
 Students who simulate chaotic systems rarely ask this question about their own
-programs. We integrate the double pendulum with a fixed-step fourth-order
-Runge--Kutta method in arbitrary-precision arithmetic, so we can vary the step
-$h$ and the number of significand bits $p$ independently and measure the effects
-of truncation and of roundoff separately. The time $T$ for which a run agrees
-with a far more accurate reference obeys a single law governed by the largest
+programs. We integrate the double pendulum with a fixed-step fourth-order Runge
+--Kutta method in arbitrary-precision arithmetic, so we can vary the step $h$
+and the number of significand bits $p$ independently and measure the effects of
+truncation and of roundoff separately. The time $T$ for which a run agrees with
+a far more accurate reference obeys a single law governed by the largest
 Lyapunov exponent $\lambda$. Each halving of $h$ extends $T$ by $4\ln2/\lambda$
 and each additional bit extends this time by $\ln2/\lambda$. For any given
-precision there is a best step beyond which refinement shortens $T$. The slopes
+precision, there is a best step beyond which refinement shortens $T$. The slopes
 yield $\lambda=\lamStep\pm\lamStepSE$ and $\lamPrec\pm\lamPrecSE$, which are
 equal to the growth rate of a perturbed trajectory over the same interval and
 within 20\% of the long-time exponent \lamBen\ from the standard two-trajectory
-method. In double precision the pendulum cannot be followed for more than about
+method. In double precision, the pendulum cannot be followed for more than about
 \TBestDouble\ natural time units with this method, but its energy stays constant
-to $10^{-\dEexp}$ in units of $mgl$ throughout. The project is suitable for advanced
-undergraduates in physics or applied mathematics and requires only a short
-program. It shows that numerical error is a perturbation like any other, and
-that its growth measures the dynamics.
+to $10^{-\dEexp}$ in units of $mgl$ throughout. The project is suitable for
+advanced undergraduates in physics or applied mathematics and requires only a
+short program. It shows that numerical error is a small perturbation, so its
+growth measures the Lyapunov exponent.
 \end{abstract}
 
 \noindent\textbf{Keywords:} double pendulum, chaos, Lyapunov exponent, numerical
@@ -57,25 +57,25 @@ integration, roundoff error, computational physics education
 \section{Introduction}
 
 The double pendulum is among the simplest mechanical systems that are chaotic,
-and it is correspondingly popular in teaching. In this journal,
-D'Alessio~\cite{dalessio2023} has given a combined analytical, numerical, and
-experimental treatment, including the full spectrum of Lyapunov exponents, aimed
-at upper-year undergraduates. Earlier pedagogical studies measured the
-divergence of two real pendulums released together~\cite{shinbrot1992},
-developed the apparatus as a laboratory experiment~\cite{levien1993}, and mapped
-the onset of chaos numerically as a function of energy~\cite{stachowiak2006}.
-Calv\~ao and Penna~\cite{calvao2015} reviewed in this journal the numerical
-methods used to study the system, and a recent pedagogical review is given in
-reference~\cite{oliveira2024}. In
-all of them, the simulation is a tool, and its output is taken to be the motion
-of the pendulum, but this paper studies the tool.
+so it is popular in teaching. In this journal, D'Alessio~\cite{dalessio2023}
+has given a combined analytical, numerical, and experimental treatment,
+including the full spectrum of Lyapunov exponents, aimed at upper-year
+undergraduates. Earlier pedagogical studies measured the divergence of two real
+pendulums released together~\cite{shinbrot1992}, developed the apparatus as a
+laboratory experiment~\cite{levien1993}, and mapped the onset of chaos
+numerically as a function of energy~\cite{stachowiak2006}. Calv\~ao and
+Penna~\cite{calvao2015} reviewed in this journal the numerical methods used to
+study the system, and a recent pedagogical review is given in
+reference~\cite{oliveira2024}. In all of them, the simulation is a tool whose
+output is taken to be the motion of the pendulum, and this paper studies the
+accuracy of that tool.
 
 Sensitive dependence on initial conditions means that a small perturbation grows
 exponentially, and a numerical integrator supplies a small perturbation at every
 step, by truncating the Taylor series of the solution and by rounding each
 arithmetic result. Hence, the computed trajectory must leave the true trajectory
 after a finite time, however carefully the program is written.
-Lorenz~\cite{lorenz1963} met chaos in this way, and
+Lorenz~\cite{lorenz1963} found chaos in this way, and
 Lighthill~\cite{lighthill1986} later called the time in question the horizon of
 predictability. The reliability of long computations of chaotic systems has
 since been examined in atmospheric modelling~\cite{teixeira2007} and with
@@ -99,12 +99,11 @@ energy, cannot answer this question.
 
 This work began as our final project in an undergraduate course on numerical
 analysis. We simulated identical double pendulums with different steps and
-different floating-point formats and watched the trajectories separate. The
-observation that prompted this paper was that a step ten times smaller, at ten
-times the cost, added only five to ten seconds of agreement. Here we redo the
-project with a cleaner design, explain that observation, and show that the
-numerical error measures the Lyapunov exponent, so the explanation is
-quantitative.
+different floating-point formats and watched the trajectories separate. We noted
+that a step ten times smaller, at ten times the cost, added only five to ten
+seconds of agreement, which prompted this paper. Here we redo the project with a
+controlled design, explain that observation, and show that the numerical error
+measures the Lyapunov exponent, so the explanation is quantitative.
 
 We believe the project is useful to physics education at the advanced
 undergraduate level in three ways. First, it gives students a concrete meaning
@@ -139,10 +138,10 @@ The pendulum is released from rest with both rods horizontal, so $E=0$.
 
 \subsection{Numerical method}
 
-Equations (\ref{eq:eom1}) and (\ref{eq:eom2}) are written as a first-order system
-for $\bm y=(\theta_1,\theta_2,\omega_1,\omega_2)$ and advanced with the classical
-fourth-order Runge--Kutta method (RK4)~\cite{hairer1993} at a fixed step $h$. We
-avoid adaptive step-size control deliberately, since its purpose is to hide the
+We write equations (\ref{eq:eom1}) and (\ref{eq:eom2}) as a first-order system
+for $\bm y=(\theta_1,\theta_2,\omega_1,\omega_2)$ and advance it with the
+classical fourth-order Runge--Kutta method (RK4)~\cite{hairer1993} at a fixed
+step $h$. We avoid adaptive step-size control, since its purpose is to hide the
 dependence on $h$ that we want to see.
 
 The arithmetic is done by the MPFR library~\cite{fousse2007}, which rounds each
@@ -156,29 +155,28 @@ is exact for our purposes.
 
 The choice of step proved important, since our first version used decimal steps
 such as $h=10^{-4}$ and no binary format represents $10^{-4}$ exactly. Hence,
-runs at different precisions were also using slightly different steps. We now
-take $h=2^{-k}$, which is exact at every precision, so changing $p$ changes only
-the arithmetic. Wild~\cite{wild2019} observed the effect of this choice when
+runs at different precisions also used slightly different steps. We now take
+$h=2^{-k}$, which is exact at every precision, so changing $p$ changes only the
+arithmetic. Wild~\cite{wild2019} observed the effect of this choice, since
 replacing $h=10^{-4}$ by $h=2^{-13}$ kept the 53-bit and 64-bit solutions close
 to the 113-bit solution for longer.
 
 \subsection{Measuring error without an exact solution}
 
 We measure the error of a run by the distance $d(t)$, in units of $l$, between
-its lower bob and that of a reference run. Because both bobs lie within $2l$ of
-the pivot, $d$ cannot exceed 4, and its running maximum levels off near that
+its lower bob and that of a reference run. Both bobs lie within $2l$ of the
+pivot, so $d$ cannot exceed 4, and its running maximum levels off near that
 bound when two runs have become unrelated. The
 \emph{horizon} $T$ of a run is the first time at which $d\ge10^{-2}$, which is
 about when two superimposed animations can be told apart by eye.
 
-The reference is a much more accurate run, and an elementary argument says how
-far the reference can be trusted. If $e_a$ and $e_r$ are the true errors of a
-run and of the reference, the triangle inequality gives $|d-e_a|\le e_r$. Both
-errors are amplified by the same dynamics, so their ratio stays near its initial
-value, which for RK4 runs with steps $2^{-k_a}$ and $2^{-k_r}$ is
-$2^{-4(k_r-k_a)}$. With $k_r=18$, the separation $d$ equals the true error of
-every run with $k_a\le16$ to better than half a per cent, until that run reaches
-its own horizon.
+The reference is a much more accurate run, and we now show how far it can be
+trusted. Let $e_a$ and $e_r$ be the true errors of a run and of the reference.
+By the triangle inequality, $|d-e_a|\le e_r$. Both errors are amplified by the
+same dynamics, so their ratio stays near its initial value, which for RK4 runs
+with steps $2^{-k_a}$ and $2^{-k_r}$ is $2^{-4(k_r-k_a)}$. With $k_r=18$, the
+separation $d$ equals the true error of every run with $k_a\le16$ to better than
+half a per cent, until that run reaches its own horizon.
 
 \subsection{Three experiments}
 
@@ -188,10 +186,9 @@ below truncation, so we vary $k$ from 4 to 17 and compare with $k=18$.
 \item[Roundoff only.] With $h$ fixed, we vary $p$ from 11 to 128 and compare
 with the run at $p=237$ and the \emph{same} $h$. The two runs iterate the same
 discrete map, so their truncation errors are identical and cancel, which leaves
-only rounding. Ordinary hardware arithmetic offers no way of making this
-separation.
+only rounding. Ordinary hardware arithmetic cannot make this separation.
 \item[Both.] With $p=24$, 32, 40, 53, and 64, we vary $k$ and compare with the
-reference of the first experiment. This is the position of a student using
+reference of the first experiment. This is the situation of a student using
 single or double precision.
 \end{description}
 
@@ -215,7 +212,7 @@ The first term comes from $1/h$ truncation errors of size $h^5$ per unit time. T
 second comes from $1/h$ rounding errors of size $2^{-p}$ per unit time, where
 $\gamma=\tfrac12$ if they accumulate as a random walk and $\gamma=1$ if they
 accumulate systematically~\cite{hairer2008}. Kehlet and
-Logg~\cite{kehlet2017} derive $\gamma=\tfrac12$. Setting $e(T)=\epsilon$ gives
+Logg~\cite{kehlet2017} derive $\gamma=\tfrac12$. Setting $e(T)=\epsilon$ yields
 \begin{equation}
 T=\frac1\lambda\ln\frac{\epsilon}{A\,h^{4}+B\,2^{-p}h^{-\gamma}} .
 \label{eq:horizon}
@@ -269,11 +266,11 @@ $2^{-170}$, shifted vertically.}
 \end{figure}
 
 The common curve is the amplification factor of the trajectory. To check this,
-we perturbed $\theta_1(0)$ by $2^{-170}$, which is small enough to stay in the
-linear regime for the whole run. The resulting separation, drawn as the thin
-line in figure~\ref{fig:step}(b), follows the collapsed error curves through
-every plateau and burst. The integrator's error grows as a perturbation of the
-initial condition grows because the error is itself a perturbation. The growth
+we perturbed $\theta_1(0)$ by $2^{-170}$, small enough to stay in the linear
+regime for the whole run. The resulting separation, drawn as the thin line in
+figure~\ref{fig:step}(b), follows the collapsed error curves through every
+plateau and burst. Hence, the integrator's error grows as a perturbation of the
+initial condition grows, because the error is itself a perturbation. The growth
 is exponential only on average, since the local rate varies as the pendulum
 visits more and less unstable configurations.
 
@@ -308,10 +305,10 @@ horizons in figure~\ref{fig:hor}(b) have slope $\slopePrec\pm\slopePrecSE$ time
 units per bit, so equation~(\ref{eq:Tp}) gives $\lambda=\lamPrec\pm\lamPrecSE$.
 The fit uses $24\le p\le80$, since below 24 the horizons fall inside the slow
 start from rest and above 80 they lie beyond the 160 time units over which the
-growth of the perturbation was measured.
-Changing the step by a factor of 256 shifts the line only slightly. Comparing
-errors at fixed early times for $h=2^{-8}$ and $2^{-16}$ gives
-$\gamma\approx\gammaRound$, close to the random-walk value of $\tfrac12$.
+growth of the perturbation was measured. Changing the step by a factor of 256
+shifts the line only slightly. Comparing errors at fixed early times for
+$h=2^{-8}$ and $2^{-16}$ gives $\gamma\approx\gammaRound$, close to the
+random-walk value of $\tfrac12$.
 
 \begin{figure}[t]
 \centering
@@ -323,48 +320,48 @@ only roundoff is seen.}
 \end{figure}
 
 We left the lowest precisions out of the fit because with $p=11$ and
-$h=2^{-12}$ the pendulum never moves (the result we remember best from the
-project). Wild~\cite{wild2019} observed the same constant solution with eleven
-bits and $h=10^{-4}$. The cause is not underflow, since the exponent range of
-MPFR is never approached. At first the velocity $\omega_1$ falls by exactly $h$ per step for
-2048 steps. At $t=\tfrac12$ it reaches $-\tfrac12$, where round-to-even freezes
-the velocity because $h$ is half a unit in the last place of $\omega_1$. The
-increment to the angle is then $h\,|\omega_1|=2^{-13}$ for ever, a quarter of
-the $2^{-11}$ needed to change the last of eleven bits in $\theta_1=\pi/2$.
-Hence, the pendulum hangs horizontally with a constant velocity that produces no
-motion. With the same eleven bits and $h=2^{-8}$ the increment first exceeds
-$2^{-11}$ at $t=0.129$ and the pendulum falls, so reducing the step has made the
-error total. Since the velocity freezes at $2^{p-k}$ and the angle needs
-$|\omega_1|>2^{k-p}$, the pattern is general for this release, and the pendulum
-stalled for every $h<2^{-p}$ we tried and moved for every $h>2^{-p}$. At
-$h=2^{-p}$ the increment is itself a tie, so the outcome depends on the last bit
-of $\pi/2$.
+$h=2^{-12}$ the pendulum never moves (the most interesting result of the
+original project). Wild~\cite{wild2019} observed the same constant solution
+with eleven bits and $h=10^{-4}$. The cause is not underflow, since the exponent
+range of MPFR is never approached. At first the velocity $\omega_1$ falls by
+exactly $h$ per step for 2048 steps. At $t=\tfrac12$ it reaches $-\tfrac12$,
+where round-to-even freezes the velocity because $h$ is half a unit in the last
+place of $\omega_1$. The increment to the angle is then $h\,|\omega_1|=2^{-13}$
+for ever, a quarter of the $2^{-11}$ needed to change the last of eleven bits in
+$\theta_1=\pi/2$. Hence, the pendulum hangs horizontally with a constant
+velocity that produces no motion. With the same eleven bits and $h=2^{-8}$ the
+increment first exceeds $2^{-11}$ at $t=0.129$ and the pendulum falls, so
+reducing the step has made the error total. Since the velocity freezes at
+$2^{p-k}$ and the angle needs $|\omega_1|>2^{k-p}$, the pattern is general for
+this release, and the pendulum stalled for every $h<2^{-p}$ we tried and moved
+for every $h>2^{-p}$. At $h=2^{-p}$ the increment is itself a tie, so the
+outcome depends on the last bit of $\pi/2$.
 
 \subsection{The Lyapunov exponent four ways}
 
 Table~\ref{tab:lambda} compares the estimates. The conventional value is from
 the two-trajectory method of Benettin
-\textit{et al}~\cite{benettin1976,wolf1985}. A shadow orbit at
-distance $10^{-8}$ is advanced with the fiducial orbit, and once per time unit
-the logarithm of the growth of their separation is accumulated and the shadow is
-returned to its original distance. Over $2\times10^4$ time units this gives
+\textit{et al}~\cite{benettin1976,wolf1985}. We advance a shadow orbit at
+distance $10^{-8}$ with the fiducial orbit, and once per time unit we
+accumulate the logarithm of the growth of their separation and return the
+shadow to its original distance. Over $2\times10^4$ time units this gives
 $\lambda=\lamBen$. Of \nEns\ other states at rest with the same energy,
 \nChaotic\ are chaotic with median \lamBenEns, and \nReg\ lie on regular orbits.
 The least-squares slope of $\ln d$ against $t$ for the $2^{-170}$ perturbation
 is \lamDir\ over the whole run and \lamDirWin\ for $t>20$, after the slow start
 from rest, which is the interval in which every horizon falls.
 
-The two values obtained from numerical error agree with each other and with the
-direct growth rate over the same interval. All three exceed the long-time value,
-by \lamExcessLo\ to \lamExcessHi\%. This is not a failure of the method, since a horizon
-samples the growth rate only up to the horizon, and over its first 160 time
-units this trajectory is more unstable than on average. The exponent proper is a
-long-time limit, and finite-time values scatter about this limit. The standard
-errors quoted do not include this scatter, since the value from precision varies
-from \lamPrecCoarse\ to \lamPrec\ with the step and the value from the step
-varies from \lamStepThrLo\ to \lamStepThrHi\ with the threshold that defines the
-horizon. Students who
-picture exponential divergence as uniform do well to learn this distinction.
+The two values from numerical error agree with each other and with the direct
+growth rate over the same interval. All three exceed the long-time value, by
+\lamExcessLo\ to \lamExcessHi\%. This is a finite-time effect rather than a
+failure of the method, since a horizon samples the growth rate only up to the
+horizon, and over its first 160 time units this trajectory is more unstable
+than on average. The exponent proper is a long-time limit, and finite-time
+values scatter about this limit. The standard errors quoted do not include this
+scatter. The value from precision varies from \lamPrecCoarse\ to \lamPrec\ with
+the step, and the value from the step varies from \lamStepThrLo\ to
+\lamStepThrHi\ with the threshold that defines the horizon. This distinction
+matters for students, who otherwise picture exponential divergence as uniform.
 
 \begin{table}[t]
 \centering
@@ -398,9 +395,9 @@ longest horizon is \TBestDouble\ time units (\TBestDoubleSec~s for one-metre
 rods), reached at $h=2^{-\kBestDouble}$. Reducing the step further to $2^{-17}$
 costs \kRatio\ times as much and gives \TdoubleFine. In single precision the best
 horizon is \TBestSingle, at $h=2^{-\kBestSingle}$, and by $h=2^{-17}$ it has
-fallen to \TsingleFine. Calv\~ao and Penna~\cite{calvao2015}, judging RK4 on this
-system by its energy error, likewise found an optimum near a step of $10^{-4}$
-with smaller steps giving less precision, and the horizon $T$ shows the same
+fallen to \TsingleFine. Calv\~ao and Penna~\cite{calvao2015}, who judged RK4 on
+this system by its energy error, likewise found an optimum near a step of
+$10^{-4}$ and less precision at smaller steps. The horizon $T$ shows the same
 turnover in the trajectory itself.
 
 \begin{figure}[t]
@@ -432,11 +429,12 @@ Significand bits $p$ & Best step & $T_{\max}\sqrt{g/l}$ & $T_{\max}$ (s)\\
 
 Figure~\ref{fig:energy} shows both errors for an ordinary double-precision run
 with $h=2^{-10}$. The energy error drifts slowly upward, as expected of a
-non-symplectic method, and never exceeds $10^{-\dEexp}$ in units of $mgl$, but the position error
-passes $10^{-2}l$ at $t\approx\TdoubleKten$ and grows to the length of a rod by
-$t\approx\TdoubleRod$. Energy confines the state to a three-dimensional
-surface in phase space, and chaotic divergence takes place within that surface,
-so a computed state can wander arbitrarily far without leaving the surface.
+non-symplectic method, and never exceeds $10^{-\dEexp}$ in units of $mgl$, but
+the position error passes $10^{-2}l$ at $t\approx\TdoubleKten$ and grows to the
+length of a rod by $t\approx\TdoubleRod$. Energy confines the state to a
+three-dimensional surface in phase space, and chaotic divergence takes place
+within that surface, so a computed state can wander arbitrarily far without
+leaving the surface.
 
 \begin{figure}[t]
 \centering
@@ -448,7 +446,7 @@ double precision with $h=2^{-10}$.}
 
 \section{Discussion}
 
-\subsection{The price of a longer horizon}
+\subsection{The cost of a longer horizon}
 
 The work of a fixed-step run is proportional to $2^k$. From
 equation~(\ref{eq:Tk}), a gain of $\Delta T$ needs
@@ -456,42 +454,42 @@ $\Delta k=\lambda\Delta T/(4\ln2)$, which multiplies the work by
 $e^{\lambda\Delta T/4}$, and the precision must rise by about
 $\lambda\Delta T(4+\gamma)/(4\ln2)$ bits to stay at the optimum. Doubling the
 double-precision horizon of this pendulum means extrapolating beyond the times
-sampled, so we use the long-time exponent \lamBen. The number of steps is
+sampled, so we use the long-time exponent \lamBen. Then, the number of steps is
 multiplied by about \costFactor\ and some \extraBits\ more bits are needed. At
-the finite-time rate \lamStep\ of the first 160 time units the figures would be
-nearer \costFactorFT\ and \extraBitsFT, but either way the horizon grows as the
-logarithm of the effort. In everyday units the long-time exponent is
+the finite-time rate \lamStep\ of the first 160 time units, the numbers would
+be nearer \costFactorFT\ and \extraBitsFT, but in both cases the horizon grows
+as the logarithm of the effort. In everyday units, the long-time exponent is
 $\lambda=\lamSI$~s$^{-1}$ for one-metre rods, so reducing the step tenfold adds
 $4\ln10/\lambda\approx\decadeSI$~s (\decadeSIFT~s at the finite-time rate), as
-we saw in our first crude runs.
+we saw in our first runs.
 
 A method of order $n$ replaces 4 by $n$, and we verified that the error of
 forward Euler at fixed time scales as $h^{\ordEuler}$ and that of the explicit
 midpoint rule as $h^{\ordMid}$. Forward Euler with $h=2^{-16}$ has a horizon of
 only \TEulerFine\ time units, shorter than the \TRKcoarse\ of RK4 with
 $h=2^{-4}$, and its horizons all fall inside the slow start of the motion, so
-its slope against $k$ does not give $\lambda$. For chaotic problems the case for
-high-order methods is stronger than usual.
+its slope against $k$ does not give $\lambda$. Hence, for chaotic problems the
+gain from a high-order method is larger than usual.
 
 \subsection{What survives the horizon}
 
-After $T$ the computed trajectory is no longer the solution of the problem
+After $T$, the computed trajectory is no longer the solution of the problem
 posed. However, shadowing
 results~\cite{hammel1987,hammel1988,grebogi1990,sauer1997,hayes2004} show that it typically
 stays close to an exact trajectory with slightly different initial data for
-times much longer than the horizon. This is the reason to expect that averages
-over the motion are still computed correctly, and the
-first row of table~\ref{tab:lambda} relies on this fact. As a check, we
-computed the time-averaged kinetic energy over $10^4$ time units in single and
-double precision. The two trajectories part after about fifty time units, but
-the averages are 1.357 and 1.358.
+times much longer than the horizon. Hence, we expect that averages over the
+motion are still computed correctly, and the first row of
+table~\ref{tab:lambda} relies on this fact. As a check, we computed the
+time-averaged kinetic energy over $10^4$ time units in single and double
+precision. The two trajectories separate after about fifty time units, but the
+averages are 1.357 and 1.358.
 
 \subsection{Running the project with a class}
 
 The program is the usual RK4 with the number type changed, and apart from the
 two finest reference runs everything reported here finishes in minutes on a
 laptop. In the natural sequence we followed, students first overlay animations
-of runs that differ in step or precision and see them separate. They then plot
+of runs that differ in step or precision and see them separate. Then, they plot
 the separation on a logarithmic scale and find straight lines, fit the
 horizons, and compare the resulting $\lambda$ with a two-trajectory estimate.
 Students without a multiple-precision library can still carry out the third
