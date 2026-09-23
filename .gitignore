@@ -9,7 +9,6 @@ data/*.log
 *.log
 *.out
 *.synctex.gz
-*Notes.bib
 *.fls
 *.fdb_latexmk
 
@@ -17,6 +16,4 @@ data/*.log
 __pycache__/
 *.pyc
 *.buildlog
-supplement_anonymous/
-supplement_anonymous.zip
 work/

@@ -29,16 +29,19 @@ simulated double pendulum: a student computational project}
 \maketitle
 
 \begin{abstract}
-\noindent We report a computational project, begun in an undergraduate course in
-numerical analysis, that asks for how long a computed trajectory is accurate.
-Students who simulate chaotic systems rarely ask this question about their own
-programs. We integrate the double pendulum with a fixed-step fourth-order Runge
+\noindent When numerical error grows approximately exponentially at rate
+$\lambda$, reducing its effective amplitude by a factor $r$ extends the
+accuracy horizon by only $\ln r/\lambda$. A smaller step or wider floating-point
+format therefore buys a fixed number of Lyapunov times rather than a
+proportional increase in accurate simulation time. We study this general
+limitation through the double pendulum, which students already simulate.
+We integrate the double pendulum with a fixed-step fourth-order Runge
 --Kutta method in arbitrary-precision arithmetic, so we can vary the step $h$
 and the number of significand bits $p$ independently and measure the effects of
 truncation and of roundoff separately. The time $T$ for which a run agrees with
 a far more accurate reference obeys a single law governed by the largest
-Lyapunov exponent $\lambda$. Each halving of $h$ extends $T$ by $4\ln2/\lambda$
-and each additional bit extends this time by $\ln2/\lambda$. For any given
+Lyapunov exponent $\lambda$. Halving $h$ extends $T$ by $4\ln2/\lambda$ when truncation dominates,
+and each extra bit adds $\ln2/\lambda$ when roundoff dominates. For any given
 precision, there is a best step beyond which refinement shortens $T$. The slopes
 yield $\lambda=\lamStep\pm\lamStepSE$ and $\lamPrec\pm\lamPrecSE$, which are
 equal to the growth rate of a perturbed trajectory over the same interval and
@@ -65,8 +68,8 @@ pendulums released together~\cite{shinbrot1992}, developed the apparatus as a
 laboratory experiment~\cite{levien1993}, and mapped the onset of chaos
 numerically as a function of energy~\cite{stachowiak2006}. Calv\~ao and
 Penna~\cite{calvao2015} reviewed in this journal the numerical methods used to
-study the system, and a recent pedagogical review is given in
-reference~\cite{oliveira2024}. In all of them, the simulation is a tool whose
+study the system, and de Oliveira~\cite{oliveira2024} gives a recent
+pedagogical review. In all of them, the simulation is a tool whose
 output is taken to be the motion of the pendulum, and this paper studies the
 accuracy of that tool.
 
@@ -305,10 +308,15 @@ horizons in figure~\ref{fig:hor}(b) have slope $\slopePrec\pm\slopePrecSE$ time
 units per bit, so equation~(\ref{eq:Tp}) gives $\lambda=\lamPrec\pm\lamPrecSE$.
 The fit uses $24\le p\le80$, since below 24 the horizons fall inside the slow
 start from rest and above 80 they lie beyond the 160 time units over which the
-growth of the perturbation was measured. Changing the step by a factor of 256
-shifts the line only slightly. Comparing errors at fixed early times for
-$h=2^{-8}$ and $2^{-16}$ gives $\gamma\approx\gammaRound$, close to the
-random-walk value of $\tfrac12$.
+growth of the perturbation was measured. Comparing errors at fixed early
+times for $h=2^{-8}$ and $2^{-16}$ gives $\gamma\approx\gammaRound$, close to
+the random-walk value of $\tfrac12$. By equation~(\ref{eq:Tp}), reducing the
+step by this factor of 256 decreases the horizon by $\gamma\,8\ln2/\lambda$.
+Substituting $\gamma=\gammaRound$ and $\lambda=\lamPrec$ gives about 9.5 time
+units. In figure~\ref{fig:hor}(b), the decrease at the nine shared precisions
+$24\le p\le80$ averages 12.6 time units and ranges from 3.9 to 21.6. Hence,
+the model gives the direction and approximate size of the change, but the
+measured horizons do not shift by a constant amount.
 
 \begin{figure}[t]
 \centering
@@ -395,10 +403,8 @@ longest horizon is \TBestDouble\ time units (\TBestDoubleSec~s for one-metre
 rods), reached at $h=2^{-\kBestDouble}$. Reducing the step further to $2^{-17}$
 costs \kRatio\ times as much and gives \TdoubleFine. In single precision the best
 horizon is \TBestSingle, at $h=2^{-\kBestSingle}$, and by $h=2^{-17}$ it has
-fallen to \TsingleFine. Calv\~ao and Penna~\cite{calvao2015}, who judged RK4 on
-this system by its energy error, likewise found an optimum near a step of
-$10^{-4}$ and less precision at smaller steps. The horizon $T$ shows the same
-turnover in the trajectory itself.
+fallen to \TsingleFine. These measurements show the turnover in trajectory
+accuracy as the step is reduced at fixed precision.
 
 \begin{figure}[t]
 \centering
@@ -473,16 +479,14 @@ gain from a high-order method is larger than usual.
 
 \subsection{What survives the horizon}
 
-After $T$, the computed trajectory is no longer the solution of the problem
-posed. However, shadowing
-results~\cite{hammel1987,hammel1988,grebogi1990,sauer1997,hayes2004} show that it typically
-stays close to an exact trajectory with slightly different initial data for
-times much longer than the horizon. Hence, we expect that averages over the
-motion are still computed correctly, and the first row of
-table~\ref{tab:lambda} relies on this fact. As a check, we computed the
-time-averaged kinetic energy over $10^4$ time units in single and double
-precision. The two trajectories separate after about fifty time units, but the
-averages are 1.357 and 1.358.
+Loss of trajectory agreement need not imply loss of statistical accuracy.
+Shadowing studies~\cite{hammel1987,hammel1988,grebogi1990,sauer1997,hayes2004}
+motivate this distinction, but do not establish it for this pendulum. As a
+check on one observable, we computed the time-averaged kinetic energy over
+$10^4$ time units in single and double precision. The trajectories separate
+after about fifty time units, but the averages are 1.357 and 1.358. This
+agreement does not establish the accuracy of other averages or of the
+long-time Lyapunov exponent.
 
 \subsection{Running the project with a class}
 
@@ -503,8 +507,8 @@ horizon can be predicted from the known exponent before it is measured.
 
 \section{Conclusion}
 
-A simulation of a chaotic system is accurate for a time that depends
-logarithmically on the error introduced per step. For the double pendulum
+While numerical error grows approximately exponentially, the accuracy horizon
+depends logarithmically on the effective amplitude of that error. For the double pendulum
 integrated by RK4, that time increases by $4\ln2/\lambda$ per halving of the
 step and by $\ln2/\lambda$ per bit of precision, up to a ceiling set by
 whichever source of error is larger. In double precision, the ceiling is about
@@ -514,9 +518,17 @@ value to within twenty per cent. Students who complete the project see that the
 system responds to truncation and roundoff as it responds to any other
 perturbation, and they learn to ask for how long any simulation is accurate.
 
+Students who replace the right-hand side by the Lorenz equations or a driven
+pendulum in a chaotic regime can use the same RK4 and precision sweeps to test
+for logarithmic horizon gains, with slopes set by that system's growth rate
+over the interval studied.
+
 \section*{Acknowledgments}
 This work began as a final project in Math~165, Numerical Analysis, at Harvey
-Mudd College.
+Mudd College. Claude Code (Claude Opus 5 and Claude Fable 5.1) was used to
+revise manuscript prose and assist with computational code and LaTeX editing.
+OpenAI Codex (GPT-6) assisted with further revisions and LaTeX checks. The
+authors take responsibility for the content and results.
 
 \section*{Data availability statement}
 The code that produced every result and figure, the numerical data plotted, and

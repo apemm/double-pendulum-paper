@@ -1,48 +1,22 @@
 # How long is a simulated double pendulum right?
 
-Two manuscripts from one body of work, on how step size and floating-point
-precision limit the time for which a numerical simulation of the chaotic double
-pendulum is accurate, and how that time is governed by the largest Lyapunov
-exponent.
+A student computational project on how step size and floating-point precision
+limit the time for which a chaotic trajectory is accurate, and how that time
+is governed by the Lyapunov exponent.
 
-The work began as the Math 165 (Numerical Analysis) final project of Luke Wang
-and I (Arjun Pemmasani) at Harvey Mudd College in fall 2025. This repository is the
-version rebuilt for publication.
+Authors: Arjun Pemmasani and Luke Wang, Harvey Mudd College. The work began
+as their Math 165 final project in fall 2025.
 
-## The two manuscripts
+## Manuscript
 
-They are alternatives, not companions. Journals do not allow the same work to be
-under review at two of them at once, so the second is submitted only if the
-first declines.
+The target is European Journal of Physics, Paper (Mechanics).
+The manuscript and cover letter are in ejp/, as TeX sources and compiled PDFs.
+The manuscript contains six figures and two tables. Its latest TeXcount is
+3603 words including headings and captions (3803 including math-expression
+units), excluding references. Both authors have approved submission.
+No journal upload has been performed by this workflow.
 
-| | First choice | Second choice |
-|---|---|---|
-| Journal | *American Journal of Physics*, Computational Physics section | *European Journal of Physics*, Paper (Mechanics) |
-| Folder | `ajp/` | `ejp/` |
-| Framing | A computational exercise for instructors, with four suggested problems (six in the long version) | A student computational project, with its educational use and level stated |
-| Format | REVTeX 4.2 preprint, 16 pages. See "Length" below | 12 pt article, about 2900 words of body text against a limit of 4000 |
-| Review | Anonymous: `manuscript.pdf` carries no names; `manuscript_named.pdf` does | Single-anonymous: names on the manuscript |
-| Supplement | `supplement_anonymous.zip`, built and scanned by `code/make_supplement.py`. Never this README, which names the authors | The repository contents |
-| Cover letter | `ajp/cover_letter.pdf` | `ejp/cover_letter.pdf`, which EJP requires, stating level and usefulness |
-| Also needed | `ajp/alt_text.md`, `ajp/statement_for_submission_form.md`, `ajp/upload/fig1.pdf` to `fig3.pdf` | |
-
-## Length of the AJP manuscript
-
-AJP asks that papers normally fit on 6 journal pages. Two estimates disagree, and
-the truth for AJP's own layout is probably between them.
-
-| Build | Preprint pages | AJP's rule of thumb (pages / 3) | Two-column REVTeX build |
-|---|---|---|---|
-| `manuscript.pdf`, the one to submit | 16 | 5.3 | about 6.2, the last 0.2 being references |
-| `manuscript_long.pdf` | 19 | 6.3 | about 7.0 |
-
-The submitted version leaves out the snapshot figure, the precision-sweep curves
-(their content is in the horizon figure and the second animation), the energy
-figure (its numbers stay in the text), suggested problems 4 and 5, and the
-general form of the stall rule, and runs the list of five lessons into a
-paragraph. All of it is in the source behind `\ifdefined\longversion`, so
-compiling `manuscript_long.tex` restores it if an editor allows the space.
-`manuscript_twocolumn.tex` exists only to measure length.
+See ejp/revision_notes.md for the editorial changes and numerical checks.
 
 ## What was found
 
@@ -82,7 +56,7 @@ one metre long.
 
 A literature search on 19 September 2026 (ten searches by different routes,
 every result checked against Crossref or arXiv) found that the main results exist
-in the research literature for other systems, and both manuscripts now say so.
+in the research literature for other systems, and the manuscript now say so.
 
 - Li, Zeng and Chou (2001): a given precision has a best step and a longest
   reliable time.
@@ -103,7 +77,7 @@ What remains ours is the classroom treatment: separating the two errors with the
 precision as a program parameter, measuring each, the collapse onto a perturbed
 trajectory, the stall, and doing all of it on the double pendulum.
 
-Wild's thesis has now been read in full, and the papers describe it from the
+Wild's thesis has now been read in full, and the manuscript describes it from the
 text. The thesis uses the same ingredients (RK4, MPFR, the IEEE significand widths 11,
 24, 53, 64 and 113, comparison with the 113-bit run at the same step) and
 observed three things found here as well: wider formats stay accurate for
@@ -111,17 +85,12 @@ longer, the 11-bit solution is constant at h = 1e-4 (attributed there to
 underflow; the mechanism is the rounding stall described above), and replacing
 h = 1e-4 by 2^-13 keeps the 53- and 64-bit runs accurate for longer. The results
 are qualitative, judged by eye from the l2 norm of the state, and relating the
-divergence time to the Lyapunov exponent is listed as future work. Both papers
+divergence time to the Lyapunov exponent is listed as future work. The manuscript
 cite the thesis at each of those three points.
 
-One thing still to do. Calvao and Penna is not available online and has been
-requested. What the papers say about it (that a step of 1e-4 served RK4 best on
-this system and smaller steps gave less precision) rests on two secondary
-sources that agree: Wild's thesis, which took its step size from that paper and
-says so, and one literature search that reported the same. Check that sentence
-against the paper itself when it arrives, and see whether they judged accuracy by
-energy error, which would deserve a sentence of contrast with the energy result
-here.
+The full Calvao and Penna paper has been requested but has not been read.
+The manuscript cites its general numerical-methods review, but makes no claim
+about an optimum step or turnover in that paper.
 
 ## Changes from the original project, and why
 
@@ -139,9 +108,9 @@ here.
 
 ## Reproducing everything
 
-Requires Python 3 with `numpy`, `matplotlib`, `gmpy2`, `pypdf` (for
-`make_supplement.py`) and optionally `imageio-ffmpeg` for MP4 output; and a TeX
-distribution with REVTeX 4.1, which is what AJP's own sample manuscript uses.
+Requires Python 3 with numpy, matplotlib and gmpy2, optionally
+imageio-ffmpeg for MP4 output, and a TeX distribution with lmodern, natbib,
+amsmath, graphicx, booktabs, setspace and hyperref.
 
 ```
 cd code
@@ -154,49 +123,40 @@ python stall_grid.py       # the stall rule on a grid of precisions and steps
 python analysis.py         # error curves, horizons, fits -> data/*.json, numbers.tex
 python figures.py          # figures/*.pdf and *.png
 python animate.py both     # animations/*.gif and *.mp4
-python make_supplement.py  # anonymous bundle for AJP review, scanned for names
 ```
 
-`data/raw/` is not committed; it is regenerated by `runs.py`. Everything
-downstream of it is committed, so the three submitted figures, the animations'
-inputs and both PDFs can be rebuilt without re-running the simulations. The one
-exception is the snapshot figure of the long version, which reads the raw
-trajectories and is skipped when they are absent. Build the PDFs with
-`bash ajp/build.sh`, which fixes the clock so the PDF metadata carries no time
-zone.
+The raw trajectories in data/raw/ are not committed; runs.py regenerates them.
+The processed data, figures and animations are committed. Regenerating the
+snapshot figure requires the raw trajectories.
 
-Every number quoted in either manuscript is a macro in `numbers.tex`, which
-`analysis.py` writes from the data. Neither manuscript contains a number typed by
-hand, other than the two long-time averages in the shadowing check.
+Build the manuscript from the ejp directory:
+
+```sh
+pdflatex manuscript.tex
+bibtex manuscript
+pdflatex manuscript.tex
+pdflatex manuscript.tex
+pdflatex cover_letter.tex
+texcount -inc -sum manuscript.tex
+```
+
+Most numerical results are macros in numbers.tex, generated by analysis.py.
+The paired horizon-shift comparison is documented in ejp/revision_notes.md.
 
 ## Layout
 
-```
-ajp/                 manuscript.tex (one source); _named, _long and _twocolumn wrappers; cover letter; alt text
-ejp/                 manuscript, cover letter
-figures/             fig1 to fig7, PDF and 600 dpi PNG
-animations/          step_size and precision, GIF and MP4 (supplementary material)
-code/                dp.py (integrator), runs.py, analysis.py, figures.py, animate.py, ...
-data/                summary.json, analysis.npz, lyapunov.npz, orders.json, shadow_check.json
-refs.bib             shared bibliography; every entry checked against Crossref
-numbers.tex          generated; every quoted number
-```
+- ejp/: manuscript, cover letter and revision log
+- figures/: publication figures in PDF and PNG
+- animations/: step-size and precision animations in GIF and MP4
+- code/: integrator, simulation drivers, analysis and plotting
+- data/: processed curves, horizons, fitted slopes and verification results
+- refs.bib: bibliography
+- numbers.tex: generated numerical macros
 
 ## Before submitting
 
-- Authorship: Arjun Pemmasani is first and corresponding author, Luke Wang second.
-  Confirm Luke's affiliation line.
-- AJP encourages a proposal to the Computational Physics section editors before
-  submission, summarizing the physics, the algorithm and the intended level. Send
-  it, and then say in the cover letter that it was sent and what the reply was.
-- AJP: upload `ajp/manuscript.pdf` (anonymous), `ajp/upload/fig1.pdf` to
-  `fig3.pdf`, `ajp/alt_text.md`, `supplement_anonymous.zip`, and paste
-  `ajp/statement_for_submission_form.md` into the form. Do not upload this README
-  or link this repository, since both name the authors.
-- AJP requires disclosure to the editor if artificial intelligence was used to
-  generate any of the text. The cover letter and the manuscript's author
-  declarations both carry the disclosure.
-- EJP: upload `ejp/manuscript.pdf` and the cover letter.
-- Run a fresh literature search on the day. AJP rejects without review for
-  missing closely related work, and the search here is current to 19 September
-  2026.
+- Review the final manuscript and cover letter in ejp/.
+- Supply the code, processed data and animations as supplementary material.
+- Check the Acknowledgments disclosure and confirm the affiliation details.
+- Run a fresh literature search on submission day. The earlier sweep was
+  recorded on 19 September 2026; these revisions did not repeat it.
